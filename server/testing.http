@@ -48,7 +48,7 @@ PUT http://localhost:3001/api/stopwatches/1/entries
 content-type: application/json
 
 {
-    "end_time": "2021-09-01T12:00:00.000Z"
+    "end_time": "2021-09-01T13:00:00.000Z"
 }
 
 ### Delete stopwatch entry of provided id

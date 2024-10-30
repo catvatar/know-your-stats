@@ -141,20 +141,27 @@ app.post("/api/stopwatches/:id/entries", async (req, res) => {
 app.put("/api/stopwatches/:id/entries", async (req, res) => {
   const data = req.body;
   if (await stopwatchIsRunning(req.params.id)) {
-    // TODO Fix this query to update the last entry
-    const sql = `UPDATE stopwatches_entries SET end_time = ? WHERE stopwatch_id = ? ORDER BY id DESC LIMIT 1`;
-    const values = [data.end_time, req.params.id];
-    db.run(sql, values, function(err) {
+    const getEntryID = `SELECT * FROM stopwatches_entries WHERE stopwatch_id = ? ORDER BY id DESC LIMIT 1`;
+    const valuesForGetEntryID = [req.params.id];
+    db.get(getEntryID, valuesForGetEntryID, (err, row) => {
       if (err) {
-        console.error(`Error updating entry for stopwatch ${req.params.id}:`);
-        throw err.message;
+        console.error(`Error getting entry id for stopwatch ${req.params.id}:`);
+        throw err;
       }  
-      console.log(`Row(s) updated: ${this.changes}`);
-    });  
+      const sql = `UPDATE stopwatches_entries SET end_time = ? WHERE id = ?`;
+      const values = [data.end_time, row.id];
+      db.run(sql, values, function(err) {
+        if (err) {
+          console.error(`Error updating entry for stopwatch ${req.params.id}:`);
+          throw err.message;
+        }  
+        console.log(`Row(s) updated: ${this.changes}`);
+      });  
+    });
     res.json({ message: "Stopwatch entry updated successfully!" });
   } else {
     res.json({ message: "Stopwatch is not running!" });
-  }  
+  }
 });  
 
 // Delete stopwatch entry of provided id
