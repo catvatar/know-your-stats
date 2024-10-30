@@ -4,7 +4,10 @@ const express = require("express");
 
 const PORT = process.env.PORT || 3001;
 
+
 const app = express();
+
+app.use(express.json());
 
 app.get("/api", (req, res) => {
   res.json({ message: "Hello from server!" });
@@ -113,25 +116,11 @@ app.get("/api/stopwatches/:id/entries", (req, res) => {
   });  
 });  
 
-const stopwatchIsRunning = (stopwatch_id) => {
-  let sql = `SELECT * FROM stopwatches_entries WHERE stopwatch_id = ? ORDER BY id DESC LIMIT 1`;
-  db.get(sql, [stopwatch_id], (err, row) => {
-    if (err) {
-      console.error(`Error checking if stopwatch ${stopwatch_id} is running:`);
-      throw err;
-    }  
-    if (row && !row.end_time) {
-      return true;
-    } else {
-      return false;
-    }  
-  });  
-}  
 
 // Add a new stopwatch entry only if its not running
-app.post("/api/stopwatches/:id/entries", (req, res) => {
+app.post("/api/stopwatches/:id/entries", async (req, res) => {
   let data = req.body;
-  if (!stopwatchIsRunning(req.params.id)) {
+  if (!await stopwatchIsRunning(req.params.id)) {
     let sql = `INSERT INTO stopwatches_entries(stopwatch_id, start_time) VALUES(?, ?)`;
     let values = [req.params.id, data.start_time];
     db.run(sql, values, function(err) {
@@ -149,9 +138,10 @@ app.post("/api/stopwatches/:id/entries", (req, res) => {
 
 
 // Update the last stopwatch entry only if its running
-app.put("/api/stopwatches/:id/entries", (req, res) => {
+app.put("/api/stopwatches/:id/entries", async (req, res) => {
   let data = req.body;
-  if (stopwatchIsRunning(req.params.id)) {
+  if (await stopwatchIsRunning(req.params.id)) {
+    // TODO Fix this query to update the last entry
     let sql = `UPDATE stopwatches_entries SET end_time = ? WHERE stopwatch_id = ? ORDER BY id DESC LIMIT 1`;
     let values = [data.end_time, req.params.id];
     db.run(sql, values, function(err) {
@@ -180,6 +170,19 @@ app.delete("/api/stopwatches/entries/:entry_id", (req, res) => {
   res.json({ message: "Stopwatch entry deleted successfully!" });
 });  
 
-
-
-
+const stopwatchIsRunning = async (stopwatch_id) => {
+  return new Promise((resolve, reject) => {
+    let sql = `SELECT * FROM stopwatches_entries WHERE stopwatch_id = ? ORDER BY id DESC LIMIT 1`;
+    db.get(sql, [stopwatch_id], (err, row) => {
+      if (err) {
+        console.error(`Error checking if stopwatch ${stopwatch_id} is running:`);
+        reject(err);
+      }  
+      if (row && !row.end_time) {
+        resolve(true);
+      } else {
+        resolve(false);
+      }  
+    });
+  });
+}

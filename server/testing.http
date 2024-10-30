@@ -1,11 +1,11 @@
 
-### Get all stopwatches
+### Sanity check
 # http://localhost:3001/api
-GET http://localhost:3001/api HTTP/1.1
+GET http://localhost:3001/api
 
 ### Get all stopwatches
 # http://localhost:3001/api/stopwatches
-GET http://localhost:3001/api/stopwatches HTTP/1.1
+GET http://localhost:3001/api/stopwatches
 
 ### Add a new stopwatch
 # http://localhost:3001/api/stopwatches
@@ -13,29 +13,44 @@ POST http://localhost:3001/api/stopwatches
 content-type: application/json
 
 {
-    "name": "Stopwatch 1"
+    "name": "Stopwatch 3"
 }
 
 ### Rename a stopwatch of provided id
 # http://localhost:3001/api/stopwatches/:id
-PUT http://localhost:3001/api/stopwatches/:id HTTP/1.1
+PUT http://localhost:3001/api/stopwatches/2
+content-type: application/json
+
+{
+    "name": "Renamed Stopwatch 2"
+}
 
 ### Delete a stopwatch of provided id and all its entries
 # http://localhost:3001/api/stopwatches/:id
-DELETE http://localhost:3001/api/stopwatches/:id HTTP/1.1
+DELETE http://localhost:3001/api/stopwatches/3
 
 ### Get all entries for a stopwatch of provided id
 # http://localhost:3001/api/stopwatches/:id/entries
-GET http://localhost:3001/api/stopwatches/:id/entries HTTP/1.1
+GET http://localhost:3001/api/stopwatches/1/entries
 
 ### Add a new stopwatch entry only if its not running
 # http://localhost:3001/api/stopwatches/:id/entries
-POST http://localhost:3001/api/stopwatches/:id/entries HTTP/1.1
+POST http://localhost:3001/api/stopwatches/1/entries
+content-type: application/json
+
+{
+    "start_time": "2021-09-01T10:00:00.000Z"
+}
 
 ### Update the last stopwatch entry only if its running
 # http://localhost:3001/api/stopwatches/:id/entries
-PUT http://localhost:3001/api/stopwatches/:id/entries HTTP/1.1
+PUT http://localhost:3001/api/stopwatches/1/entries
+content-type: application/json
+
+{
+    "end_time": "2021-09-01T12:00:00.000Z"
+}
 
 ### Delete stopwatch entry of provided id
 # http://localhost:3001/api/stopwatches/entries/:entry_id
-DELETE http://localhost:3001/api/stopwatches/entries/:entry_id HTTP/1.1
+DELETE http://localhost:3001/api/stopwatches/entries/1
