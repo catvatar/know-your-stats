@@ -8,7 +8,7 @@ let db = new sqlite3.Database('./stopwatches.db', (err) => {
 });
 
 db.run(`CREATE TABLE IF NOT EXISTS stopwatches(
-        uid text,
+        id text,
         startTime text, 
         endTime text,
         isRunning integer

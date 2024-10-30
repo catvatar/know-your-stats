@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'; 
 
-export default function Stopwatch({uid}: {uid: string}) {
+export default function Stopwatch({id}: {id: string}) {
     const [isRunning, setIsRunning] = useState(false);
     const [elapsedTime, setElapsedTime] = useState(0);
 
