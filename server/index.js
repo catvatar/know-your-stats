@@ -19,7 +19,7 @@ app.listen(PORT, () => {
 
 const sqlite3 = require('sqlite3').verbose();
 
-let db = new sqlite3.Database('./db/stopwatches.db', (err) => {
+const db = new sqlite3.Database('./db/stopwatches.db', (err) => {
   if (err) {
     console.error(`Error connecting to the stopwatches database:`);
     throw err;
@@ -43,7 +43,7 @@ create_tables();
 
 // Get all stopwatches
 app.get("/api/stopwatches", (req, res) => {
-  let sql = `SELECT * FROM stopwatches`;
+  const sql = `SELECT * FROM stopwatches`;
   db.all(sql, [], (err, rows) => {
     if (err) {
       console.error(`Error getting stopwatches:`);
@@ -56,8 +56,8 @@ app.get("/api/stopwatches", (req, res) => {
 // Add a new stopwatch
 app.post("/api/stopwatches", (req, res) => {
   console.log(req.body);
-  let sql = `INSERT INTO stopwatches(name) VALUES(?)`;
-  let values = [req.body.name];
+  const sql = `INSERT INTO stopwatches(name) VALUES(?)`;
+  const values = [req.body.name];
   db.run(sql, values, function(err) {
     if (err) {
       console.error(`Error adding stopwatch ${req.body.name}:`);
@@ -70,9 +70,9 @@ app.post("/api/stopwatches", (req, res) => {
 
 // Rename a stopwatch of provided id
 app.put("/api/stopwatches/:id", (req, res) => {
-  let data = req.body;
-  let sql = `UPDATE stopwatches SET name = ? WHERE id = ?`;
-  let values = [data.name, req.params.id];
+  const data = req.body;
+  const sql = `UPDATE stopwatches SET name = ? WHERE id = ?`;
+  const values = [data.name, req.params.id];
   db.run(sql, values, function(err) {
     if (err) {
       console.error(`Error updating stopwatch ${req.params.id}:`);
@@ -85,7 +85,7 @@ app.put("/api/stopwatches/:id", (req, res) => {
 
 // Delete a stopwatch of provided id and all its entries
 app.delete("/api/stopwatches/:id", (req, res) => {
-  let sql = `DELETE FROM stopwatches WHERE id = ?`;
+  const sql = `DELETE FROM stopwatches WHERE id = ?`;
   db.run(sql, [req.params.id], function(err) {
     if (err) {
       console.error(`Error deleting stopwatch ${req.params.id}:`);
@@ -93,7 +93,7 @@ app.delete("/api/stopwatches/:id", (req, res) => {
     }  
     console.log(`Row(s) deleted: ${this.changes}`);
   });  
-  let sql2 = `DELETE FROM stopwatches_entries WHERE stopwatch_id = ?`;
+  const sql2 = `DELETE FROM stopwatches_entries WHERE stopwatch_id = ?`;
   db.run(sql2, [req.params.id], function(err) {
     if (err) {
       console.error(`Error deleting entries for stopwatch ${req.params.id}:`);
@@ -106,7 +106,7 @@ app.delete("/api/stopwatches/:id", (req, res) => {
 
 // Get all entries for a stopwatch of provided id
 app.get("/api/stopwatches/:id/entries", (req, res) => {
-  let sql = `SELECT * FROM stopwatches_entries WHERE stopwatch_id = ?`;
+  const sql = `SELECT * FROM stopwatches_entries WHERE stopwatch_id = ?`;
   db.all(sql, [req.params.id], (err, rows) => {
     if (err) {
       console.error(`Error getting entries for stopwatch ${req.params.id}:`);
@@ -119,10 +119,10 @@ app.get("/api/stopwatches/:id/entries", (req, res) => {
 
 // Add a new stopwatch entry only if its not running
 app.post("/api/stopwatches/:id/entries", async (req, res) => {
-  let data = req.body;
+  const data = req.body;
   if (!await stopwatchIsRunning(req.params.id)) {
-    let sql = `INSERT INTO stopwatches_entries(stopwatch_id, start_time) VALUES(?, ?)`;
-    let values = [req.params.id, data.start_time];
+    const sql = `INSERT INTO stopwatches_entries(stopwatch_id, start_time) VALUES(?, ?)`;
+    const values = [req.params.id, data.start_time];
     db.run(sql, values, function(err) {
       if (err) {
         console.error(`Error adding entry for stopwatch ${req.params.id}:`);
@@ -139,11 +139,11 @@ app.post("/api/stopwatches/:id/entries", async (req, res) => {
 
 // Update the last stopwatch entry only if its running
 app.put("/api/stopwatches/:id/entries", async (req, res) => {
-  let data = req.body;
+  const data = req.body;
   if (await stopwatchIsRunning(req.params.id)) {
     // TODO Fix this query to update the last entry
-    let sql = `UPDATE stopwatches_entries SET end_time = ? WHERE stopwatch_id = ? ORDER BY id DESC LIMIT 1`;
-    let values = [data.end_time, req.params.id];
+    const sql = `UPDATE stopwatches_entries SET end_time = ? WHERE stopwatch_id = ? ORDER BY id DESC LIMIT 1`;
+    const values = [data.end_time, req.params.id];
     db.run(sql, values, function(err) {
       if (err) {
         console.error(`Error updating entry for stopwatch ${req.params.id}:`);
@@ -159,7 +159,7 @@ app.put("/api/stopwatches/:id/entries", async (req, res) => {
 
 // Delete stopwatch entry of provided id
 app.delete("/api/stopwatches/entries/:entry_id", (req, res) => {
-  let sql = `DELETE FROM stopwatches_entries WHERE id = ?`;
+  const sql = `DELETE FROM stopwatches_entries WHERE id = ?`;
   db.run(sql, [req.params.entry_id], function(err) {
     if (err) {
       console.error(`Error deleting entry ${req.params.entry_id}:`);
@@ -172,7 +172,7 @@ app.delete("/api/stopwatches/entries/:entry_id", (req, res) => {
 
 const stopwatchIsRunning = async (stopwatch_id) => {
   return new Promise((resolve, reject) => {
-    let sql = `SELECT * FROM stopwatches_entries WHERE stopwatch_id = ? ORDER BY id DESC LIMIT 1`;
+    const sql = `SELECT * FROM stopwatches_entries WHERE stopwatch_id = ? ORDER BY id DESC LIMIT 1`;
     db.get(sql, [stopwatch_id], (err, row) => {
       if (err) {
         console.error(`Error checking if stopwatch ${stopwatch_id} is running:`);
