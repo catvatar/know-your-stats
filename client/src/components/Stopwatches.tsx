@@ -2,9 +2,9 @@ import Stopwatch from "./Stopwatch";
 
 export default function Stopwatches() {
     const stopwatches = [
-        { id: '1', name: "Okno postu" },
-        { id: '2', name: "Okno karmienia" },
-        { id: '3', name: "Spacer" },
+        { id: 1, name: "Okno postu" },
+        { id: 2, name: "Okno karmienia" },
+        { id: 3, name: "Spacer" },
     ];
     return <div className="p-4 bg-gray-900 text-white rounded shadow-md">
         <h2 className="text-3xl font-bold mb-4">Stopwatches</h2>
