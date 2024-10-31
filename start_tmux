@@ -14,7 +14,7 @@ if [ $? != 0 ]; then
   tmux split-window -h
 
   tmux send-keys -t 0 'npm run dev' C-m
-  tmux send-keys -t 1 'z client'
+  tmux send-keys -t 1 'z client' C-m
   tmux send-keys -t 1 'npm run start' C-m
 fi
 

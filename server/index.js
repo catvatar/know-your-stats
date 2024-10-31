@@ -9,6 +9,10 @@ const app = express();
 
 app.use(express.json());
 
+const cors = require("cors")
+
+app.use(cors())
+
 app.get("/api", (req, res) => {
   res.json({ message: "Hello from server!" });
 });
@@ -22,9 +26,6 @@ const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./db/stopwatches.db', (err) => {
   if (err) {
     console.error(`Error connecting to the stopwatches database:`);
-    if(err.errno == 14){
-      console.log('database does not exist')
-    }
     throw err;
   }  
   console.log('Connected to the stopwatches database.');
@@ -82,7 +83,7 @@ app.put("/api/stopwatches/:id", (req, res) => {
       throw err.message;
     }  
     console.log(`Row(s) updated: ${this.changes}`);
-  });  
+  }); 
   res.json({ message: "Stopwatch updated successfully!" });
 });  
 

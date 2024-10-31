@@ -53,24 +53,28 @@ async function deleteStopwatch(id: number) {
 
 export default function Stopwatches(): React.JSX.Element {
     const [stopwatches, setStopwatches] = React.useState<Stopwatch[]>([]);
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [isAddStopwatchPopupOpen, setIsAddStopwatchPopupOpen] = useState(false);
     const [newStopwatchName, setNewStopwatchName] = useState("");
+    
+    const [stopwatchToBeDeleted, setstopwatchToBeDeleted] = useState<number | null>(null);
+    const [isAreYouSurePopupOpen, setIsAreYouSurePopupOpen] = useState(false);
+ 
     const inputRef = useRef<HTMLInputElement>(null);
 
-    React.useEffect(() => {
+    useEffect(() => {
         fetchStopwatches().then(stopwatches => setStopwatches(stopwatches));
     }, []);
 
     useEffect(() => {
-        if (isPopupOpen && inputRef.current) {
+        if (isAddStopwatchPopupOpen && inputRef.current) {
             inputRef.current.focus();
         }
-    }, [isPopupOpen]);
+    }, [isAddStopwatchPopupOpen]);
 
     const handleAddStopwatch = () => {
         createStopwatch(newStopwatchName).then(() => {
             fetchStopwatches().then(stopwatches => setStopwatches(stopwatches));
-            setIsPopupOpen(false);
+            setIsAddStopwatchPopupOpen(false);
             setNewStopwatchName("");
         });
     };
@@ -85,22 +89,27 @@ export default function Stopwatches(): React.JSX.Element {
         <div className="p-4 bg-gray-900 text-white rounded shadow-md border border-gray-700 w-full max-w-md mx-auto">
             <div className="bg-gray-800 p-4 rounded-t mb-4 flex justify-between items-center">
                 <h2 className="text-3xl font-bold">Stopwatches</h2>
-                <button onClick={() => setIsPopupOpen(true)} className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-blue-700">Add Stopwatch</button>
+                <button onClick={() => setIsAddStopwatchPopupOpen(true)} className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-blue-700">Add Stopwatch</button>
             </div>
             <div>
                 <ul className="space-y-4">
-                    {stopwatches.map(stopwatch => (
+                    {stopwatches.length > 0 ? 
+                    stopwatches.map(stopwatch => (
                         <li key={stopwatch.id} className="bg-gray-800 p-4 rounded">
                             <div className="flex justify-between items-center mb-2">
                                 <h3 className="text-xl font-semibold">{stopwatch.name}</h3>
-                                <button onClick={() => handleDeleteStopwatch(stopwatch.id)} className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-700">Delete</button>
+                                <button onClick={() => {
+                                    setstopwatchToBeDeleted(stopwatch.id);
+                                    setIsAreYouSurePopupOpen(true);
+                                }} className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-700">Delete</button>
                             </div>
                             <Stopwatch id={stopwatch.id}/>
                         </li> 
-                    ))}
+                    )):
+                <h3>Create your first stopwatch by clicking the "Add Stopwatch" button</h3>}
                 </ul>
             </div>
-            {isPopupOpen && (
+            {isAddStopwatchPopupOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-gray-800 p-4 rounded shadow-md">
                         <h3 className="text-xl font-semibold mb-4">Add New Stopwatch</h3>
@@ -113,8 +122,24 @@ export default function Stopwatches(): React.JSX.Element {
                             placeholder="Stopwatch Name"
                         />
                         <div className="flex justify-end space-x-2">
-                            <button onClick={() => setIsPopupOpen(false)} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">Cancel</button>
+                            <button onClick={() => setIsAddStopwatchPopupOpen(false)} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">Cancel</button>
                             <button onClick={handleAddStopwatch} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">Add</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {isAreYouSurePopupOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-gray-800 p-4 rounded shadow-md">
+                        <h3 className="text-xl font-semibold mb-4">Are you sure you want to delete this stopwatch?</h3>
+                        <p>This will delete the stopwatch and ALL it's entries.</p>
+                        <p className="font-semibold mb-4">This action is irreversible</p>
+                        <div className="flex justify-end space-x-2">
+                            <button onClick={() => setIsAreYouSurePopupOpen(false)} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">No</button>
+                            <button onClick={() => {
+                                stopwatchToBeDeleted&&handleDeleteStopwatch(stopwatchToBeDeleted);
+                                setIsAreYouSurePopupOpen(false);
+                            }} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">I'm sure</button>
                         </div>
                     </div>
                 </div>
