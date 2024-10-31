@@ -27,7 +27,7 @@ content-type: application/json
 
 ### Delete a stopwatch of provided id and all its entries
 # http://localhost:3001/api/stopwatches/:id
-DELETE http://localhost:3001/api/stopwatches/3
+DELETE http://localhost:3001/api/stopwatches/1
 
 ### Get all entries for a stopwatch of provided id
 # http://localhost:3001/api/stopwatches/:id/entries

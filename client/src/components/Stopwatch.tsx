@@ -32,7 +32,7 @@ export default function Stopwatch({id}: {id: number}) {
     }
 
     return <div className="flex flex-col items-center p-4 bg-gray-800 text-white rounded shadow-md">
-        <p className="text-lg mb-4">{formatTime(elapsedTime)}</p>
+        <p className="text-2xl mb-4">{formatTime(elapsedTime)}</p> {/* Increased text size */}
         <div className="space-x-2">
             {!isRunning?
             <button onClick={handleStart} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">Start</button>:

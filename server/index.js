@@ -65,7 +65,7 @@ app.post("/api/stopwatches", (req, res) => {
     }  
     console.log(`A row has been inserted with rowid ${this.lastID}`);
   });  
-  res.json({ message: "Stopwatch added successfully!" });
+  res.json({ message: "Stopwatch added successfully!", id: this.lastID });
 });  
 
 // Rename a stopwatch of provided id
