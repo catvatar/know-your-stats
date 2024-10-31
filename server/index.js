@@ -22,6 +22,9 @@ const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./db/stopwatches.db', (err) => {
   if (err) {
     console.error(`Error connecting to the stopwatches database:`);
+    if(err.errno == 14){
+      console.log('database does not exist')
+    }
     throw err;
   }  
   console.log('Connected to the stopwatches database.');
