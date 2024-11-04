@@ -36,6 +36,23 @@ async function createStopwatch(name: string) {
     });
 }
 
+async function renameStopwatch(id: number, name: string) {
+    fetch(`http://localhost:3001/api/stopwatches/${id}`, {
+        "method": "PUT",
+        "headers": {
+            "user-agent": "vscode-restclient",
+            "content-type": "application/json"
+        },
+        body: JSON.stringify({ name })
+    })
+    .then(response => {
+        console.log(response);
+    })
+    .catch(err => {
+        console.error(err);
+    });
+}
+
 async function deleteStopwatch(id: number) {
     fetch(`http://localhost:3001/api/stopwatches/${id}`, {
         "method": "DELETE",
@@ -53,8 +70,13 @@ async function deleteStopwatch(id: number) {
 
 export default function Stopwatches(): React.JSX.Element {
     const [stopwatches, setStopwatches] = React.useState<Stopwatch[]>([]);
+
     const [isAddStopwatchPopupOpen, setIsAddStopwatchPopupOpen] = useState(false);
     const [newStopwatchName, setNewStopwatchName] = useState("");
+
+    const [isRenameStopwatchPopupOpen, setIsRenameStopwatchPopupOpen] = useState(false);
+    const [stopwatchToBeRenamed, setstopwatchToBeRenamed] = useState<number | null>(null);
+    const [renameStopwatchName, setRenameStopwatchName] = useState("");
     
     const [stopwatchToBeDeleted, setstopwatchToBeDeleted] = useState<number | null>(null);
     const [isAreYouSurePopupOpen, setIsAreYouSurePopupOpen] = useState(false);
@@ -79,9 +101,18 @@ export default function Stopwatches(): React.JSX.Element {
         });
     };
 
+    const handleRenameStopwatch = (id: number, name: string) => {
+        renameStopwatch(id, name).then(() => {
+            fetchStopwatches().then(stopwatches => setStopwatches(stopwatches));
+            setIsRenameStopwatchPopupOpen(false);
+            setRenameStopwatchName("");
+        });
+    }
+
     const handleDeleteStopwatch = (id: number) => {
         deleteStopwatch(id).then(() => {
             fetchStopwatches().then(stopwatches => setStopwatches(stopwatches));
+            setIsAreYouSurePopupOpen(false);
         });
     };
  
@@ -98,10 +129,16 @@ export default function Stopwatches(): React.JSX.Element {
                         <li key={stopwatch.id} className="bg-gray-800 p-4 rounded">
                             <div className="flex justify-between items-center mb-2">
                                 <h3 className="text-xl font-semibold">{stopwatch.name}</h3>
-                                <button onClick={() => {
-                                    setstopwatchToBeDeleted(stopwatch.id);
-                                    setIsAreYouSurePopupOpen(true);
-                                }} className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-700">Delete</button>
+                                <div className="flex justify-between gap-2">
+                                    <button onClick={() => {
+                                        setstopwatchToBeRenamed(stopwatch.id);
+                                        setIsRenameStopwatchPopupOpen(true);
+                                    }} className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-700">Rename</button>
+                                    <button onClick={() => {
+                                        setstopwatchToBeDeleted(stopwatch.id);
+                                        setIsAreYouSurePopupOpen(true);
+                                    }} className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-700">Delete</button>
+                                </div>
                             </div>
                             <Stopwatch id={stopwatch.id}/>
                         </li> 
@@ -128,6 +165,27 @@ export default function Stopwatches(): React.JSX.Element {
                     </div>
                 </div>
             )}
+            {isRenameStopwatchPopupOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-gray-800 p-4 rounded shadow-md">
+                        <h3 className="text-xl font-semibold mb-4">Rename Stopwatch</h3>
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            value={renameStopwatchName}
+                            onChange={(e) => setRenameStopwatchName(e.target.value)}
+                            className="w-full p-2 mb-4 bg-gray-700 text-white rounded"
+                            placeholder="New Stopwatch Name"
+                        />
+                        <div className="flex justify-end space-x-2">
+                            <button onClick={() => setIsRenameStopwatchPopupOpen(false)} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">Cancel</button>
+                            <button onClick={()=>{
+                                stopwatchToBeRenamed&&handleRenameStopwatch(stopwatchToBeRenamed, renameStopwatchName);
+                                }} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">Rename</button>
+                        </div>
+                    </div>
+                </div>
+            )}
             {isAreYouSurePopupOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-gray-800 p-4 rounded shadow-md">
@@ -138,8 +196,7 @@ export default function Stopwatches(): React.JSX.Element {
                             <button onClick={() => setIsAreYouSurePopupOpen(false)} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">No</button>
                             <button onClick={() => {
                                 stopwatchToBeDeleted&&handleDeleteStopwatch(stopwatchToBeDeleted);
-                                setIsAreYouSurePopupOpen(false);
-                            }} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">I'm sure</button>
+                                }} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">I'm sure</button>
                         </div>
                     </div>
                 </div>

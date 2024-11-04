@@ -40,7 +40,7 @@ async function create_tables() {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     stopwatch_id INTEGER NOT NULL,
     start_time TEXT NOT NULL,
-    end_time TEXT
+    stop_time TEXT
   )`);
 }
 create_tables();
@@ -108,10 +108,22 @@ app.delete("/api/stopwatches/:id", (req, res) => {
   res.json({ message: "Stopwatch deleted successfully!" });
 });
 
-// Get all entries for a stopwatch of provided id
+// Get 50 entries for a stopwatch of provided id
 app.get("/api/stopwatches/:id/entries", (req, res) => {
-  const sql = `SELECT * FROM stopwatches_entries WHERE stopwatch_id = ?`;
-  db.all(sql, [req.params.id], (err, rows) => {
+  const sql = `SELECT * FROM stopwatches_entries WHERE stopwatch_id = ?  ORDER BY id DESC LIMIT 50`;
+  db.all(sql, [req.params.id, req.params.n], (err, rows) => {
+    if (err) {
+      console.error(`Error getting entries for stopwatch ${req.params.id}:`);
+      throw err;
+    }
+    res.json(rows);
+  });
+});
+
+// Get n entries for a stopwatch of provided id
+app.get("/api/stopwatches/:id/entries/:n", (req, res) => {
+  const sql = `SELECT * FROM stopwatches_entries WHERE stopwatch_id = ?  ORDER BY id DESC LIMIT ?`;
+  db.all(sql, [req.params.id, req.params.n], (err, rows) => {
     if (err) {
       console.error(`Error getting entries for stopwatch ${req.params.id}:`);
       throw err;
@@ -152,8 +164,8 @@ app.put("/api/stopwatches/:id/entries", async (req, res) => {
         console.error(`Error getting entry id for stopwatch ${req.params.id}:`);
         throw err;
       }
-      const sql = `UPDATE stopwatches_entries SET end_time = ? WHERE id = ?`;
-      const values = [data.end_time, row.id];
+      const sql = `UPDATE stopwatches_entries SET stop_time = ? WHERE id = ?`;
+      const values = [data.stop_time, row.id];
       db.run(sql, values, function (err) {
         if (err) {
           console.error(`Error updating entry for stopwatch ${req.params.id}:`);
@@ -189,7 +201,7 @@ const stopwatchIsRunning = async (stopwatch_id) => {
         console.error(`Error checking if stopwatch ${stopwatch_id} is running:`);
         reject(err);
       }
-      if (row && !row.end_time) {
+      if (row && !row.stop_time) {
         resolve(true);
       } else {
         resolve(false);

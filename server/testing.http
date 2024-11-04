@@ -29,28 +29,28 @@ content-type: application/json
 # http://localhost:3001/api/stopwatches/:id
 DELETE http://localhost:3001/api/stopwatches/1
 
-### Get all entries for a stopwatch of provided id
-# http://localhost:3001/api/stopwatches/:id/entries
-GET http://localhost:3001/api/stopwatches/1/entries
+### Get n entries for a stopwatch of provided id
+# http://localhost:3001/api/stopwatches/:id/entries/:n
+GET http://localhost:3001/api/stopwatches/4/entries/2
 
 ### Add a new stopwatch entry only if its not running
 # http://localhost:3001/api/stopwatches/:id/entries
-POST http://localhost:3001/api/stopwatches/1/entries
+POST http://localhost:3001/api/stopwatches/4/entries
 content-type: application/json
 
 {
-    "start_time": "2021-09-01T10:00:00.000Z"
+    "start_time": "2021-09-01T12:00:00.000Z"
 }
 
 ### Update the last stopwatch entry only if its running
 # http://localhost:3001/api/stopwatches/:id/entries
-PUT http://localhost:3001/api/stopwatches/1/entries
+PUT http://localhost:3001/api/stopwatches/4/entries
 content-type: application/json
 
 {
-    "end_time": "2021-09-01T13:00:00.000Z"
+    "stop_time": "2021-09-01T14:00:00.000Z"
 }
 
 ### Delete stopwatch entry of provided id
 # http://localhost:3001/api/stopwatches/entries/:entry_id
-DELETE http://localhost:3001/api/stopwatches/entries/1
+DELETE http://localhost:3001/api/stopwatches/entries/4
