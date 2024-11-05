@@ -7,9 +7,9 @@ import Stopwatches from './Stopwatches';
 
 jest.mock('./Stopwatch', () => ({ id }: { id: number }) => <div>Stopwatch</div>);
 
-let mockStopwatches: { id: number, name: string }[] = [{ id: 1, name: 'Stopwatch 1' }, { id: 2, name: 'Stopwatch 2' }];
 
 describe('Stopwatches Component', () => {
+    let mockStopwatches: { id: number, name: string }[] = [{ id: 1, name: 'Stopwatch 1' }, { id: 2, name: 'Stopwatch 2' }];
     beforeEach(() => {
         global.fetch = jest.fn((url, options) => {
             if (url === 'http://localhost:3001/api/stopwatches' && options.method === 'GET') {

@@ -28,7 +28,6 @@ const startStopwatch = async (id: number) => {
         body: JSON.stringify({ start_time: Date.now() })
     })
     .then(response => {
-        console.log(response);
     })
     .catch(err => {
         console.error(err);
@@ -45,7 +44,6 @@ const stopStopwatch = async (id: number) => {
         body: JSON.stringify({ stop_time: Date.now() })
     })
     .then(response => {
-        console.log(response);
     })
     .catch(err => {
         console.error(err);
@@ -94,7 +92,6 @@ export default function Stopwatch({id}: {id: number}) {
 
     useEffect(() => {
         fetchStopwatchEntries(id, 1).then((entries: StopwatchEntry[]) => {
-            console.trace(entries);
             if(entries.length > 0) {
                 stopwatchDispatchAction(entries[0]);
             }
@@ -112,29 +109,31 @@ export default function Stopwatch({id}: {id: number}) {
     }, [stopwatchState.isRunning]);
 
     const handleStart = () => {
+        const newEntry: StopwatchEntry = {
+            id: id,
+            start_time: Date.now(),
+            stop_time: null
+        };
+        stopwatchDispatchAction(newEntry);
         startStopwatch(id).then(() => {
-            fetchStopwatchEntries(id, 1).then((entries: StopwatchEntry[]) => {
-                if(entries.length > 0) {
-                    stopwatchDispatchAction(entries[0]);
-                }
-            });
+            setFakeTime(0);
         });
     }
 
     const handleStop = () => {
         clearInterval(fakeIntervalId);
+        const updatedEntry: StopwatchEntry = {
+            ...stopwatchState.stopwatchEntry!,
+            stop_time: Date.now()
+        };
+        stopwatchDispatchAction(updatedEntry);
         stopStopwatch(id).then(() => {
-            fetchStopwatchEntries(id, 1).then((entries: StopwatchEntry[]) => {
-                if(entries.length > 0) {
-                    stopwatchDispatchAction(entries[0]);
-                    setFakeTime(0);
-                }
-            });
+            setFakeTime(0);
         });
     }
     
     return <div className="flex flex-col items-center p-4 bg-gray-800 text-white rounded shadow-md">
-        {stopwatchState&&<p className='text-2xl mb-4'>Last elapsed time</p>}
+        {!stopwatchState.isRunning&&<p className='text-2xl mb-4'>Last elapsed time</p>}
         <p className="text-2xl mb-4">{stopwatchState.elapsedTime > 0 ? formatTime(Math.floor((stopwatchState.elapsedTime + fakeTime)/1000))  : "Run the stopwatch by pressing the Start button"}</p>
         <div className="space-x-2">
             {!stopwatchState.isRunning?
@@ -142,5 +141,6 @@ export default function Stopwatch({id}: {id: number}) {
             <button onClick={handleStop} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">Stop</button>
             }
         </div>
+        <div className="flex items-end justify-end"><a href={`/stopwatch/${id}`}>{'>'}</a></div>
     </div>;
 }
