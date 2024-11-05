@@ -90,6 +90,7 @@ function stopwatchReducer(state: StopwatchState, update: StopwatchEntry): Stopwa
 export default function Stopwatch({id}: {id: number}) {
     const [stopwatchState, stopwatchDispatchAction] = useReducer(stopwatchReducer,initialStopwatchState);
     const [fakeTime, setFakeTime] = useState(0);
+    const [fakeIntervalId, setFakeIntervalId] = useState<NodeJS.Timeout>();
 
     useEffect(() => {
         fetchStopwatchEntries(id, 1).then((entries: StopwatchEntry[]) => {
@@ -106,6 +107,7 @@ export default function Stopwatch({id}: {id: number}) {
                 setFakeTime((prev) => prev + 1000);
             }
         }, 1000);
+        setFakeIntervalId(interval);
         return () => clearInterval(interval);
     }, [stopwatchState.isRunning]);
 
@@ -120,15 +122,20 @@ export default function Stopwatch({id}: {id: number}) {
     }
 
     const handleStop = () => {
-        console.log("Stop");
+        clearInterval(fakeIntervalId);
+        stopStopwatch(id).then(() => {
+            fetchStopwatchEntries(id, 1).then((entries: StopwatchEntry[]) => {
+                if(entries.length > 0) {
+                    stopwatchDispatchAction(entries[0]);
+                    setFakeTime(0);
+                }
+            });
+        });
     }
-
+    
     return <div className="flex flex-col items-center p-4 bg-gray-800 text-white rounded shadow-md">
-        <p className="text-2xl mb-4">{stopwatchState.elapsedTime > 0 ? formatTime(stopwatchState.elapsedTime + fakeTime)  : "Run the stopwatch by pressing the Start button"}</p>
-        <p className="text-lg mb-4">{`Start time: ${stopwatchState.stopwatchEntry?.start_time}`}</p>
-        <p className='text-lg mb-4'>{`Current time: ${Date.now()}`}</p>
-        <p className='text-lg mb-4'>{`Elapsed time: ${stopwatchState.elapsedTime}`}</p>
-        <p className='text-lg mb-4'>{`Fake time: ${fakeTime}`}</p>
+        {stopwatchState&&<p className='text-2xl mb-4'>Last elapsed time</p>}
+        <p className="text-2xl mb-4">{stopwatchState.elapsedTime > 0 ? formatTime(Math.floor((stopwatchState.elapsedTime + fakeTime)/1000))  : "Run the stopwatch by pressing the Start button"}</p>
         <div className="space-x-2">
             {!stopwatchState.isRunning?
             <button onClick={handleStart} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">Start</button>:
