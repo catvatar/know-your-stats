@@ -119,7 +119,7 @@ export default function Stopwatches(): React.JSX.Element {
     return (
         <div className="p-4 bg-gray-900 text-white rounded shadow-md border border-gray-700 w-full max-w-md mx-auto">
             <div className="bg-gray-800 p-4 rounded-t mb-4 flex justify-between items-center">
-                <h2 className="text-3xl font-bold">Stopwatches</h2>
+                <h2 className="text-3xl font-bold"><a href="/">Stopwatches</a></h2>
                 <button onClick={() => setIsAddStopwatchPopupOpen(true)} className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-blue-700">Add Stopwatch</button>
             </div>
             <div>

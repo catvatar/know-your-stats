@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { formatTime } from "./utils/time-formats";
+import { LineChart } from "./components/LineChart";
 
 const fetchStopwatch = async (id: number) => {
     return await fetch(`http://localhost:3001/api/stopwatches/${id}`, {
@@ -65,11 +66,19 @@ export default function EntriesBrowser() {
     return (
         <div className="bg-gray-900 text-white min-h-screen p-8">
             <h1 className="text-4xl font-bold underline mb-8 text-center">
-                Know your stats
+                <a href="/">Know your stats</a> / Entries
             </h1>
             <h2 className="text-2xl font-bold mb-4 text-center">
                 Entries for Stopwatch {stopwatchName}
             </h2>
+            <div className="flex flex-col items-center w-full justify-center pb-4">
+                <LineChart data={entries.map(entry => {
+                    return {
+                        x: entry.start_time,
+                        y: entry.stop_time?Math.floor((entry.stop_time - entry.start_time)/1000):0
+                    }
+                })} size={[400,800]}/>
+            </div>
             <ul className="flex flex-col items-center w-full justify-center">
                 {entries.map(entry => (
                     <li key={entry.id} className="mb-4 p-4 border border-gray-700 rounded-lg bg-gray-800 w-3/4">
