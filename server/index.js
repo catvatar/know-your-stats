@@ -57,6 +57,18 @@ app.get("/api/stopwatches", (req, res) => {
   });
 });
 
+// Get a stopwatch of provided id
+app.get("/api/stopwatches/:id", (req, res) => {
+  const sql = `SELECT * FROM stopwatches WHERE id = ?`;
+  db.get(sql, [req.params.id], (err, row) => {
+    if (err) {
+      console.error(`Error getting stopwatch ${req.params.id}:`);
+      throw err;
+    }
+    res.json(row);
+  });
+});
+
 // Add a new stopwatch
 app.post("/api/stopwatches", (req, res) => {
   console.log(req.body);
