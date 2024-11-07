@@ -1,5 +1,6 @@
 import React from 'react';
 import {XYPlot, LineSeries, VerticalGridLines, HorizontalGridLines, XAxis, YAxis, LineSeriesPoint} from 'react-vis';
+import { formatTime } from '../utils/time-formats';
 
 
 export function LineChart({ data, size}: { data: LineSeriesPoint[], size: [number, number]}): React.JSX.Element {
@@ -18,11 +19,11 @@ export function LineChart({ data, size}: { data: LineSeriesPoint[], size: [numbe
     }
 
     return (
-        <XYPlot height={size[0]} width={size[1]} yDomain={[0,maxEntry]} className={'bg-gray-900 stroke-1 stroke-gray-50 fill-gray-50'}>
+        <XYPlot height={size[0]} width={size[1]} yDomain={[0,maxEntry]} className={'bg-gray-900 stroke-1 stroke-gray-50 fill-gray-50'} margin={{left: 80, right: 10, top: 10, bottom: 50}}>
             <VerticalGridLines tickTotal={17}/>
             <HorizontalGridLines tickTotal={8} />
             <XAxis tickFormat={(t)=>formatDate(t, seriesDuration)} tickTotal={9} tickLabelAngle={-30}/>
-            <YAxis />
+            <YAxis tickFormat={formatTime} />
             <LineSeries data={data} className='fill-none stroke-2' color={'red'}/>
         </XYPlot>
     );

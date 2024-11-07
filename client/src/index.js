@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import EntriesBrowser from './EntriesBrowser';
+import GraphView from './GraphView';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -13,6 +14,7 @@ root.render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/stopwatch/:id" element={<EntriesBrowser />} />
+        <Route path="/stopwatch/:id/graph" element={<GraphView/>} />
       </Routes>
     </Router>
   </React.StrictMode>

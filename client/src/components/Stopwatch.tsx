@@ -141,6 +141,8 @@ export default function Stopwatch({id}: {id: number}) {
             <button onClick={handleStop} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">Stop</button>
             }
         </div>
-        <div className="flex items-end justify-end"><a href={`/stopwatch/${id}`}>{'>'}</a></div>
+        <div className="flex items-end justify-end w-full mt-4">
+            <a href={`/stopwatch/${id}`} className="text-3xl text-white hover:text-gray-400">{'Entries >'}</a>
+        </div>
     </div>;
 }
