@@ -29,7 +29,6 @@ async function createStopwatch(name: string) {
         body: JSON.stringify({ name })
     })
     .then(response => {
-        console.log(response);
     })
     .catch(err => {
         console.error(err);
@@ -46,7 +45,6 @@ async function renameStopwatch(id: number, name: string) {
         body: JSON.stringify({ name })
     })
     .then(response => {
-        console.log(response);
     })
     .catch(err => {
         console.error(err);
@@ -61,7 +59,6 @@ async function deleteStopwatch(id: number) {
         }
     })
     .then(response => {
-        console.log(response);
     })
     .catch(err => {
         console.error(err);
@@ -181,7 +178,7 @@ export default function Stopwatches(): React.JSX.Element {
                             <button onClick={() => setIsRenameStopwatchPopupOpen(false)} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">Cancel</button>
                             <button onClick={()=>{
                                 stopwatchToBeRenamed&&handleRenameStopwatch(stopwatchToBeRenamed, renameStopwatchName);
-                                }} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">Rename</button>
+                                }} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700" data-testid='rename'>Rename</button>
                         </div>
                     </div>
                 </div>

@@ -2,8 +2,6 @@ import React, { useEffect, useReducer, useState } from 'react';
 
 import { formatTime } from '../utils/time-formats';
 
-
-
 const fetchStopwatchEntries = async (id: number, limit: number | null = null) => {
     const apiURL: string = limit ? `http://localhost:3001/api/stopwatches/${id}/entries/${limit}` : `http://localhost:3001/api/stopwatches/${id}/entries`;
     return await fetch(apiURL, {
@@ -79,9 +77,8 @@ function stopwatchReducer(state: StopwatchState, update: StopwatchEntry): Stopwa
     };
     const newState = calculateStateFromEntry(update);
     return {
-        ...state,
+        stopwatchEntry: update,
         ...newState,
-        stopwatchEntry: update
     };
 }
 
@@ -133,8 +130,7 @@ export default function Stopwatch({id}: {id: number}) {
     }
     
     return <div className="flex flex-col items-center p-4 bg-gray-800 text-white rounded shadow-md">
-        {!stopwatchState.isRunning&&<p className='text-2xl mb-4'>Last elapsed time</p>}
-        <p className="text-2xl mb-4">{stopwatchState.elapsedTime > 0 ? formatTime(Math.floor((stopwatchState.elapsedTime + fakeTime)/1000))  : "Run the stopwatch by pressing the Start button"}</p>
+        <p className="text-2xl mb-4 text-center">{stopwatchState.elapsedTime > 0 ? formatTime(Math.floor((stopwatchState.elapsedTime + fakeTime)/1000))  : "Run the stopwatch by pressing the Start button"}</p>
         <div className="space-x-2">
             {!stopwatchState.isRunning?
             <button onClick={handleStart} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">Start</button>:

@@ -1,7 +1,6 @@
 import React from 'react';
 
-import {act, render, screen} from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import {act, fireEvent, render, screen} from '@testing-library/react'
 import '@testing-library/jest-dom'
 import Stopwatches from './Stopwatches';
 
@@ -9,7 +8,7 @@ jest.mock('./Stopwatch', () => ({ id }: { id: number }) => <div>Stopwatch</div>)
 
 
 describe('Stopwatches Component', () => {
-    let mockStopwatches: { id: number, name: string }[] = [{ id: 1, name: 'Stopwatch 1' }, { id: 2, name: 'Stopwatch 2' }];
+    let mockStopwatches: { id: number, name: string }[] = [];
     beforeEach(() => {
         global.fetch = jest.fn((url, options) => {
             if (url === 'http://localhost:3001/api/stopwatches' && options.method === 'GET') {
@@ -29,70 +28,151 @@ describe('Stopwatches Component', () => {
                     json: () => Promise.resolve({ message: "Stopwatch deleted successfully!" })
                 });
             }
+            if (url === 'http://localhost:3001/api/stopwatches/1' && options.method === 'PUT') {
+                mockStopwatches = mockStopwatches.map(stopwatch => {
+                    if (stopwatch.id === 1) {
+                        return { ...stopwatch, name: JSON.parse(options.body as string).name };
+                    }
+                    return stopwatch;
+                });
+                return Promise.resolve({
+                    json: () => Promise.resolve({ message: "Stopwatch deleted successfully!" })
+                });
+            }
             return Promise.reject(new Error('Unknown API call'));
         }) as jest.Mock;
+        mockStopwatches = [{ id: 1, name: 'Stopwatch 1' }, { id: 2, name: 'Stopwatch 2' }];
     });
     
     afterEach(() => {
         jest.clearAllMocks();
     });
     
-    test('renders stopwatches',async () => {
+    test('renders stopwatches', async () => {
         await act(() => {
             render(<Stopwatches />);
         });
+
         expect(screen.getByText('Stopwatch 1')).toBeInTheDocument();
         expect(screen.getByText('Stopwatch 2')).toBeInTheDocument();
     });
+    
+    test('opens and closes the add stopwatch popup', async () => {
+        await act(() => {
+            render(<Stopwatches />);
+        });
 
-    // test('opens and closes the add stopwatch popup', () => {
-    //     render(<Stopwatches />);
-    //     expect(screen.queryByPlaceholderText('Stopwatch Name')).not.toBeInTheDocument();
-    //     fireEvent.click(screen.getByText('Add Stopwatch'));
-    //     expect(screen.getByPlaceholderText('Stopwatch Name')).toBeInTheDocument();
-    //     fireEvent.click(screen.getByText('Cancel'));
-    //     expect(screen.queryByPlaceholderText('Stopwatch Name')).not.toBeInTheDocument();
-    // });
+        await act(async () => {
+            fireEvent.click(screen.getByText('Add Stopwatch'));
+        });
 
-    // test('adds a new stopwatch', async () => {
-    //     render(<Stopwatches />);
-    //     fireEvent.click(screen.getByText('Add Stopwatch'));
-    //     fireEvent.change(screen.getByPlaceholderText('Stopwatch Name'), { target: { value: 'Stopwatch 3' } });
-    //     fireEvent.click(screen.getByText('Add'));
-    //     await waitFor(() => {
-    //         expect(screen.getByText('Stopwatch 3')).toBeInTheDocument();
-    //     });
-    // });
+        expect(screen.getByPlaceholderText('Stopwatch Name')).toBeInTheDocument();
 
-    // test('deletes a stopwatch', async () => {
-    //     render(<Stopwatches />);
-    //     await waitFor(() => {
-    //         expect(screen.getByText('Stopwatch 1')).toBeInTheDocument();
-    //     });
-    //     fireEvent.click(screen.getAllByText('Delete')[0]);
-    //     await waitFor(() => {
-    //         expect(screen.queryByText('Stopwatch 1')).not.toBeInTheDocument();
-    //     });
-    // });
+        await act(async () => {
+            fireEvent.click(screen.getByText('Cancel'));
+        });
 
-    // test('adds a new stopwatch', async () => {
-    //     render(<Stopwatches />);
-    //     fireEvent.click(screen.getByText('Add Stopwatch'));
-    //     fireEvent.change(screen.getByPlaceholderText('Stopwatch Name'), { target: { value: 'Stopwatch 3' } });
-    //     fireEvent.click(screen.getByText('Add'));
-    //     await waitFor(() => {
-    //         expect(screen.getByText('Stopwatch 3')).toBeInTheDocument();
-    //     });
-    // });
+        expect(screen.queryByText('Stopwatch Name')).not.toBeInTheDocument();
+    });
 
-    // test('deletes a stopwatch', async () => {
-    //     render(<Stopwatches />);
-    //     await waitFor(() => {
-    //         expect(screen.getByText('Stopwatch 1')).toBeInTheDocument();
-    //     });
-    //     fireEvent.click(screen.getAllByText('Delete')[0]);
-    //     await waitFor(() => {
-    //         expect(screen.queryByText('Stopwatch 1')).not.toBeInTheDocument();
-    //     });
-    // });
+    test('adds a new stopwatch', async () => {
+        await act(() => {
+            render(<Stopwatches />);
+        });
+
+        await act(async () => {
+            fireEvent.click(screen.getByText('Add Stopwatch'));
+        });
+
+        expect(screen.getByPlaceholderText('Stopwatch Name')).toBeInTheDocument();
+
+        await act(async () => {
+            fireEvent.change(screen.getByPlaceholderText('Stopwatch Name'), { target: { value: 'Stopwatch 3' } });
+            fireEvent.click(screen.getByText('Add'));
+        });
+
+        expect(screen.getByText('Stopwatch 3')).toBeInTheDocument();
+    });
+
+    test('opens and closes the delete stopwatch popup', async () => {
+        await act(() => {
+            render(<Stopwatches />);
+        });
+
+        await act(async () => {
+            fireEvent.click(screen.getAllByText('Delete')[0]);
+        });
+        
+        expect(screen.getByText('Are you sure you want to delete this stopwatch?')).toBeInTheDocument();
+        
+        await act(async () => {
+            fireEvent.click(screen.getByText('No'));
+        });
+        
+        expect(screen.queryByText('Are you sure you want to delete this stopwatch?')).not.toBeInTheDocument();
+    });
+
+    test('deletes a stopwatch', async () => {
+        await act(() => {
+            render(<Stopwatches />);
+        });
+
+        expect(screen.getByText('Stopwatch 1')).toBeInTheDocument();
+        expect(screen.getByText('Stopwatch 2')).toBeInTheDocument();
+        
+        await act(async () => {
+            fireEvent.click(screen.getAllByText('Delete')[0]);
+        });
+        
+        expect(screen.getByText('Are you sure you want to delete this stopwatch?')).toBeInTheDocument();
+        
+        await act(async () => {
+            fireEvent.click(screen.getByText(`I'm sure`));
+        });
+        
+        expect(screen.queryByText('Stopwatch 1')).not.toBeInTheDocument();
+        expect(screen.getByText('Stopwatch 2')).toBeInTheDocument();
+    });
+
+    test('opens and closes the rename stopwatch popup', async () => {
+        await act(() => {
+            render(<Stopwatches />);
+        });
+
+        await act(async () => {
+            fireEvent.click(screen.getAllByText('Rename')[0]);
+        });
+        
+        expect(screen.getByPlaceholderText('New Stopwatch Name')).toBeInTheDocument();
+        
+        await act(async () => {
+            fireEvent.click(screen.getByText('Cancel'));
+        });
+        
+        expect(screen.queryByPlaceholderText('New Stopwatch Name')).not.toBeInTheDocument();
+    });
+
+    test('rename stopwatch', async () => {
+        await act(() => {
+            render(<Stopwatches />);
+        });
+
+        expect(screen.getByText('Stopwatch 1')).toBeInTheDocument();
+        expect(screen.getByText('Stopwatch 2')).toBeInTheDocument();
+
+        await act(async () => {
+            fireEvent.click(screen.getAllByText('Rename')[0]);
+        });
+        
+        expect(screen.getByPlaceholderText('New Stopwatch Name')).toBeInTheDocument();
+        
+        await act(async () => {
+            fireEvent.change(screen.getByPlaceholderText('New Stopwatch Name'), { target: { value: 'Stopwatch 3' } });
+            fireEvent.click(screen.getByTestId('rename'));
+        });
+        
+        expect(screen.getByText('Stopwatch 2')).toBeInTheDocument();
+        expect(screen.getByText('Stopwatch 3')).toBeInTheDocument();
+        expect(screen.queryByText('Stopwatch 1')).not.toBeInTheDocument();
+    });
 });
