@@ -4,14 +4,14 @@ import '@testing-library/jest-dom';
 import Stopwatch from './Stopwatch';
 
 jest.mock('../utils/time-formats', () => ({
-    formatTime: jest.fn((time: number): string => `${time} seconds`)
+    formatTime: ((time: number): string => `${time} seconds`)
 }));
 
 
 describe('Stopwatch Component', () => {
     let mockStopwatchEntries: { id: number, start_time: number, stop_time: number | null }[] = [];
     beforeEach(() => {
-        // jest.useFakeTimers();
+        jest.useFakeTimers();
         global.fetch = jest.fn((url, options) => {
             if (url === 'http://localhost:3001/api/stopwatches/1/entries/1' && options.method === 'GET') {
                 return Promise.resolve({
@@ -36,7 +36,7 @@ describe('Stopwatch Component', () => {
 
     afterEach(() => {
         jest.clearAllMocks();
-        // jest.useRealTimers();
+        jest.useRealTimers();
     });
 
     test('renders Stopwatch component', async () => {
@@ -55,50 +55,53 @@ describe('Stopwatch Component', () => {
         
         await act(async () => {
             fireEvent.click(screen.getByText('Start'));
+            jest.runOnlyPendingTimers();
         });
         
-        // await act(async () => {
-        //     jest.runAllTimers();
-        // });
-
         expect(screen.getByText('Stop')).toBeInTheDocument();
         expect(global.fetch).toHaveBeenCalledWith('http://localhost:3001/api/stopwatches/1/entries', expect.any(Object));
-        expect(screen.getByText('0 seconds')).toBeInTheDocument();
+        expect(screen.getByText('1 seconds')).toBeInTheDocument();
+    });
+    
+    test('stops the stopwatch', async () => {
+        await act(async () => {
+            render(<Stopwatch id={1} />);
+        });
+        
+        expect(screen.getByText('Stop')).toBeInTheDocument();
+        
+        await act(async () => {
+            jest.runOnlyPendingTimers();
+            fireEvent.click(screen.getByText('Stop'));
+        });
+        
+        expect(screen.getByText('Start')).toBeInTheDocument();
+        expect(global.fetch).toHaveBeenCalledWith('http://localhost:3001/api/stopwatches/1/entries', expect.any(Object));
+        expect(screen.getByText('1 seconds')).toBeInTheDocument();
     });
 
-    // test('stops the stopwatch', async () => {
-    //     console.log(mockStopwatchEntries);
-    //     await act(async () => {
-    //         render(<Stopwatch id={1} />);
-    //     });
-        
-    //     const stopButton = screen.getByText('Stop');
-    //     expect(stopButton).toBeInTheDocument();
+    test('updates elapsed time while running', async () => {
+        await act(async () => {
+            render(<Stopwatch id={1} />);
+        });
 
-    //     await act(async () => {
-    //         fireEvent.click(stopButton);
-    //     });
-    //     act(() => {
-    //         jest.advanceTimersByTime(1010);
-    //     });
+        await act(async () => {
+            fireEvent.click(screen.getByText('Start'));
+            jest.runOnlyPendingTimers();
+        });
 
-    //     expect(screen.getByText('Start')).toBeInTheDocument();
-    //     expect(global.fetch).toHaveBeenCalledWith('http://localhost:3001/api/stopwatches/1/entries', expect.any(Object));
-    // });
+        expect(screen.getByText('1 seconds')).toBeInTheDocument();
 
-    // test('updates elapsed time while running', async () => {
-    //     await act(async () => {
-    //         render(<Stopwatch id={1} />);
-    //     });
-    //     const startButton = screen.getByText('Start');
-    //     await act(async () => {
-    //         fireEvent.click(startButton);
-    //     });
+        act(() => {
+            jest.runOnlyPendingTimers();
+        });
 
-    //     act(() => {
-    //         jest.advanceTimersByTime(3000);
-    //     });
+        expect(screen.getByText('2 seconds')).toBeInTheDocument();
 
-    //     expect(screen.getByText('3 seconds')).toBeInTheDocument();
-    // });
+        act(() => {
+            jest.runOnlyPendingTimers();
+        });
+
+        expect(screen.getByText('3 seconds')).toBeInTheDocument();
+    });
 });

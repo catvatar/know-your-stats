@@ -130,7 +130,9 @@ export default function Stopwatch({id}: {id: number}) {
     }
     
     return <div className="flex flex-col items-center p-4 bg-gray-800 text-white rounded shadow-md">
-        <p className="text-2xl mb-4 text-center">{stopwatchState.elapsedTime > 0 ? formatTime(Math.floor((stopwatchState.elapsedTime + fakeTime)/1000))  : "Run the stopwatch by pressing the Start button"}</p>
+        {stopwatchState.elapsedTime + fakeTime > 0 ? 
+            <p className="text-2xl mb-4 text-center">{formatTime(Math.floor((stopwatchState.elapsedTime + fakeTime)/1000))}</p>:
+            <p className="text-2xl mb-4 text-center">Run the stopwatch by pressing the Start button</p>}
         <div className="space-x-2">
             {!stopwatchState.isRunning?
             <button onClick={handleStart} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">Start</button>:
