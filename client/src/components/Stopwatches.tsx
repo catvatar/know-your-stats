@@ -1,9 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import Stopwatch from "./Stopwatch";
+import HowToUse from "./HowToUse";
 
 type Stopwatch = {
     id: number;
     name: string;
+    description: string | null;
+}
+
+type StopwatchPrototype = {
+    name: string;
+    description: string | null;
 }
 
 async function fetchStopwatches() : Promise<Stopwatch[]> {
@@ -19,14 +26,14 @@ async function fetchStopwatches() : Promise<Stopwatch[]> {
     });
 }
 
-async function createStopwatch(name: string) {
+async function createStopwatch(stopwatch: StopwatchPrototype) {
     fetch("http://localhost:3001/api/stopwatches", {
         "method": "POST",
         "headers": {
             "user-agent": "vscode-restclient",
             "content-type": "application/json"
         },
-        body: JSON.stringify({ name })
+        body: JSON.stringify(stopwatch)
     })
     .catch(err => {
         return err;
@@ -63,7 +70,7 @@ export default function Stopwatches(): React.JSX.Element {
     const [stopwatches, setStopwatches] = React.useState<Stopwatch[]>([]);
 
     const [isAddStopwatchPopupOpen, setIsAddStopwatchPopupOpen] = useState(false);
-    const [newStopwatchName, setNewStopwatchName] = useState("");
+    const [newStopwatchProtorype, setNewStopwatchProtorype] = useState<StopwatchPrototype | null>(null);
 
     const [isRenameStopwatchPopupOpen, setIsRenameStopwatchPopupOpen] = useState(false);
     const [stopwatchToBeRenamed, setstopwatchToBeRenamed] = useState<number | null>(null);
@@ -89,10 +96,10 @@ export default function Stopwatches(): React.JSX.Element {
     }, [isAddStopwatchPopupOpen]);
 
     const handleAddStopwatch = () => {
-        createStopwatch(newStopwatchName).then(() => {
+        newStopwatchProtorype && createStopwatch(newStopwatchProtorype).then(() => {
             fetchStopwatches().then(stopwatches => setStopwatches(stopwatches));
             setIsAddStopwatchPopupOpen(false);
-            setNewStopwatchName("");
+            setNewStopwatchProtorype(null);
         });
     };
 
@@ -122,8 +129,11 @@ export default function Stopwatches(): React.JSX.Element {
                     {stopwatches.length > 0 ? 
                     stopwatches.map(stopwatch => (
                         <li key={stopwatch.id} className="bg-gray-800 p-4 rounded">
-                            <div className="flex justify-between items-center mb-2">
-                                <h3 className="text-xl font-semibold">{stopwatch.name}</h3>
+                            <div className="flex justify-between group items-center mb-2">
+                                <div className="group">
+                                    <h3 className="text-xl font-semibold">{stopwatch.name}</h3>
+                                    <span className="text-gray-400 text-sm hidden group-hover:block">{stopwatch.description}</span>
+                                </div>
                                 <div className="flex justify-between gap-2">
                                     <button onClick={() => {
                                         setstopwatchToBeRenamed(stopwatch.id);
@@ -138,7 +148,7 @@ export default function Stopwatches(): React.JSX.Element {
                             <Stopwatch id={stopwatch.id}/>
                         </li> 
                     )):
-                error ? <h3>{error}</h3> : <h3>Create your first stopwatch by clicking the "Add Stopwatch" button</h3>}
+                error ? <h3>{error}</h3> : <HowToUse/>}
                 </ul>
             </div>
             {isAddStopwatchPopupOpen && (
@@ -148,10 +158,17 @@ export default function Stopwatches(): React.JSX.Element {
                         <input
                             ref={inputRef}
                             type="text"
-                            value={newStopwatchName}
-                            onChange={(e) => setNewStopwatchName(e.target.value)}
+                            value={newStopwatchProtorype?.name}
+                            onChange={(e) => setNewStopwatchProtorype({name: e.target.value} as StopwatchPrototype)}
                             className="w-full p-2 mb-4 bg-gray-700 text-white rounded"
                             placeholder="Stopwatch Name"
+                        />
+                        <input
+                            type="text"
+                            value={newStopwatchProtorype?.description || ""}
+                            onChange={(e) => setNewStopwatchProtorype({...newStopwatchProtorype, description: e.target.value} as StopwatchPrototype)}
+                            className="w-full p-2 mb-4 bg-gray-700 text-white rounded"
+                            placeholder="Stopwatch Description"
                         />
                         <div className="flex justify-end space-x-2">
                             <button onClick={() => setIsAddStopwatchPopupOpen(false)} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">Cancel</button>

@@ -73,17 +73,19 @@ app.get("/api/stopwatches/:id", (req, res) => {
 
 // Add a new stopwatch
 app.post("/api/stopwatches", (req, res) => {
-  console.log(req.body);
-  const sql = `INSERT INTO stopwatches(name) VALUES(?)`;
-  const values = [req.body.name];
+  console.log(req.body.name, req.body.description);
+  const sql = `INSERT INTO stopwatches(name, description) VALUES(?, ?)`;
+  const values = [req.body.name, req.body.description];
+  let error = null;
   db.run(sql, values, function (err) {
     if (err) {
       console.error(`Error adding stopwatch ${req.body.name}:`);
+      error = err.message;
       throw err.message;
     }
     console.log(`A row has been inserted with rowid ${this.lastID}`);
   });
-  res.json({ message: "Stopwatch added successfully!", id: this.lastID });
+  res.json({ message: `${error?error:'Stopwatch added successfully!'}`, id: this.lastID });
 });
 
 // Rename a stopwatch of provided id
@@ -120,6 +122,21 @@ app.delete("/api/stopwatches/:id", (req, res) => {
     console.log(`Row(s) deleted: ${this.changes}`);
   });
   res.json({ message: "Stopwatch deleted successfully!" });
+});
+
+// Edit description for a stopwatch of provided id
+app.put("/api/stopwatches/:id/description", (req, res) => {
+  const data = req.body;
+  const sql = `UPDATE stopwatches SET description = ? WHERE id = ?`;
+  const values = [data.description, req.params.id];
+  db.run(sql, values, function (err) {
+    if (err) {
+      console.error(`Error updating description for stopwatch ${req.params.id}:`);
+      throw err.message;
+    }
+    console.log(`Row(s) updated: ${this.changes}`);
+  });
+  res.json({ message: "Description updated successfully!" });
 });
 
 // Get 50 entries for a stopwatch of provided id
@@ -206,6 +223,13 @@ app.delete("/api/stopwatches/entries/:entry_id", (req, res) => {
   });
   res.json({ message: "Stopwatch entry deleted successfully!" });
 });
+
+// Add note to a stopwatch entry of provided id
+
+// Edit note for a stopwatch entry of provided id
+
+// Get note for a stopwatch entry of provided id
+
 
 const stopwatchIsRunning = async (stopwatch_id) => {
   return new Promise((resolve, reject) => {

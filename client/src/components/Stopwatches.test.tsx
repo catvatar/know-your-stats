@@ -5,6 +5,7 @@ import '@testing-library/jest-dom'
 import Stopwatches from './Stopwatches';
 
 jest.mock('./Stopwatch', () => ({ id }: { id: number }) => <div>Stopwatch</div>);
+jest.mock('./HowToUse', () => ({}) => <div>No Stopwatches Rendered</div>);
 
 
 describe('Stopwatches Component', () => {
@@ -183,7 +184,7 @@ describe('Stopwatches Component', () => {
             render(<Stopwatches />);
         });
 
-        expect(screen.getByText('Create your first stopwatch by clicking the "Add Stopwatch" button')).toBeInTheDocument();
+        expect(screen.getByText('No Stopwatches Rendered')).toBeInTheDocument();
     });
 
     test('fails safe without database', async () => {

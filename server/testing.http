@@ -13,7 +13,8 @@ POST http://localhost:3001/api/stopwatches
 content-type: application/json
 
 {
-    "name": "Stopwatch 3"
+    "name": "Stopwatch 3",
+    "description": "Stopwatch 3 description"
 }
 
 ### Rename a stopwatch of provided id
