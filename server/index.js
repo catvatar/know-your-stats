@@ -32,17 +32,17 @@ const db = new sqlite3.Database('./db/stopwatches.db', (err) => {
 });
 
 async function create_tables() {
-  await db.run(`CREATE TABLE IF NOT EXISTS stopwatches (
+  db.run(`CREATE TABLE IF NOT EXISTS stopwatches (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    description TEXT
+    description TEXT NOT NULL DEFAULT ('')
   )`);
-  await db.run(`CREATE TABLE IF NOT EXISTS stopwatches_entries (
+  db.run(`CREATE TABLE IF NOT EXISTS stopwatches_entries (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     stopwatch_id INTEGER NOT NULL,
     start_time TEXT NOT NULL,
     stop_time TEXT,
-    note TEXT
+    note TEXT NOT NULL DEFAULT ('')
   )`);
 }
 create_tables();
@@ -224,12 +224,20 @@ app.delete("/api/stopwatches/entries/:entry_id", (req, res) => {
   res.json({ message: "Stopwatch entry deleted successfully!" });
 });
 
-// Add note to a stopwatch entry of provided id
-
 // Edit note for a stopwatch entry of provided id
-
-// Get note for a stopwatch entry of provided id
-
+app.put("/api/stopwatches/entries/:entry_id/note", (req, res) => {
+  const data = req.body;
+  const sql = `UPDATE stopwatches_entries SET note = ? WHERE id = ?`;
+  const values = [data.note, req.params.entry_id];
+  db.run(sql, values, function (err) {
+    if (err) {
+      console.error(`Error updating note for entry ${req.params.entry_id}:`);
+      throw err.message;
+    }
+    console.log(`Row(s) updated: ${this.changes}`);
+  });
+  res.json({ message: "Note updated successfully!" });
+});
 
 const stopwatchIsRunning = async (stopwatch_id) => {
   return new Promise((resolve, reject) => {

@@ -5,12 +5,12 @@ import HowToUse from "./HowToUse";
 type Stopwatch = {
     id: number;
     name: string;
-    description: string | null;
+    description: string;
 }
 
 type StopwatchPrototype = {
     name: string;
-    description: string | null;
+    description: string;
 }
 
 async function fetchStopwatches() : Promise<Stopwatch[]> {
@@ -81,7 +81,8 @@ export default function Stopwatches(): React.JSX.Element {
 
     const [error, setError] = useState<string | null>(null);
  
-    const inputRef = useRef<HTMLInputElement>(null);
+    const addStopwatchInputRef = useRef<HTMLInputElement>(null);
+    const renameStopwatchInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         fetchStopwatches().then((stopwatches) => {
@@ -90,10 +91,16 @@ export default function Stopwatches(): React.JSX.Element {
     }, []);
 
     useEffect(() => {
-        if (isAddStopwatchPopupOpen && inputRef.current) {
-            inputRef.current.focus();
+        if (isAddStopwatchPopupOpen && addStopwatchInputRef.current) {
+            addStopwatchInputRef.current.focus();
         }
     }, [isAddStopwatchPopupOpen]);
+    
+    useEffect(() => {
+        if (isRenameStopwatchPopupOpen && renameStopwatchInputRef.current) {
+            renameStopwatchInputRef.current.focus();
+        }
+    }, [isRenameStopwatchPopupOpen]);
 
     const handleAddStopwatch = () => {
         newStopwatchProtorype && createStopwatch(newStopwatchProtorype).then(() => {
@@ -156,7 +163,7 @@ export default function Stopwatches(): React.JSX.Element {
                     <div className="bg-gray-800 p-4 rounded shadow-md">
                         <h3 className="text-xl font-semibold mb-4">Add New Stopwatch</h3>
                         <input
-                            ref={inputRef}
+                            ref={addStopwatchInputRef}
                             type="text"
                             value={newStopwatchProtorype?.name}
                             onChange={(e) => setNewStopwatchProtorype({name: e.target.value} as StopwatchPrototype)}
@@ -182,7 +189,7 @@ export default function Stopwatches(): React.JSX.Element {
                     <div className="bg-gray-800 p-4 rounded shadow-md">
                         <h3 className="text-xl font-semibold mb-4">Rename Stopwatch</h3>
                         <input
-                            ref={inputRef}
+                            ref={renameStopwatchInputRef}
                             type="text"
                             value={renameStopwatchName}
                             onChange={(e) => setRenameStopwatchName(e.target.value)}
