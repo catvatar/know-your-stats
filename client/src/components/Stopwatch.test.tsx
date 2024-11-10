@@ -104,4 +104,13 @@ describe('Stopwatch Component', () => {
 
         expect(screen.getByText('3 seconds')).toBeInTheDocument();
     });
+
+    test('fails safe when without backend', async () => {
+        global.fetch = jest.fn().mockRejectedValue(new Error('Fake error'));
+        await act(async () => {
+            render(<Stopwatch id={1} />);
+        });
+        
+        expect(screen.getByText('Run the stopwatch by pressing the Start button')).toBeInTheDocument();
+    });
 });

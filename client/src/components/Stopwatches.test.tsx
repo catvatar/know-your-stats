@@ -175,4 +175,24 @@ describe('Stopwatches Component', () => {
         expect(screen.getByText('Stopwatch 3')).toBeInTheDocument();
         expect(screen.queryByText('Stopwatch 1')).not.toBeInTheDocument();
     });
+
+    test('renders stopwatches with no stopwatches', async () => {
+        mockStopwatches = [];
+        
+        await act(() => {
+            render(<Stopwatches />);
+        });
+
+        expect(screen.getByText('Create your first stopwatch by clicking the "Add Stopwatch" button')).toBeInTheDocument();
+    });
+
+    test('fails safe without database', async () => {
+        global.fetch = jest.fn(() => Promise.reject(new Error('Failed to fetch stopwatches')));
+        
+        await act(() => {
+            render(<Stopwatches />);
+        });
+
+        expect(screen.getByText('Stopwatches')).toBeInTheDocument();
+    });
 });
