@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { formatTime } from "./utils/time-formats";
-import { LineChart } from "./components/LineChart";
 
 const fetchStopwatch = async (id: number) => {
     return await fetch(`http://localhost:3001/api/stopwatches/${id}`, {
@@ -55,6 +54,8 @@ export default function EntriesBrowser() {
     const { id } = useParams();
     const [stopwatchName, setStopwatchName] = React.useState<string>("");
     const [entries, setEntries] = React.useState<StopwatchEntry[]>([]);
+    const [error, setError] = React.useState<string | null>(null);
+    const [limit, setLimit] = React.useState<number>(10);
     
     useEffect(() => {
         const paramId =  id?parseInt(id):0;
@@ -64,9 +65,12 @@ export default function EntriesBrowser() {
         fetchStopwatch(paramId)
             .then((stopwatch: { name: string }) => {
                 setStopwatchName(stopwatch.name);
+            })
+            .catch(err => {
+                setError(err);
             });
 
-        fetchStopwatchEntries(paramId)
+        fetchStopwatchEntries(paramId, limit)
             .then((entries: StopwatchEntry[]) => {
                 setEntries(entries.map(entry => {
                     return {
@@ -75,6 +79,9 @@ export default function EntriesBrowser() {
                         stop_time: entry.stop_time?Math.floor(entry.stop_time):null
                     } as StopwatchEntry;
                 }));
+            })
+            .catch(err => {
+                setError(err);
             });
     }, [id]);
 
@@ -110,5 +117,6 @@ export default function EntriesBrowser() {
                     )})}
                 </ul>
             </div>
+            {error && <p className="text-red-500 text-center mt-4">{error.toString()}</p>}
         </div>);
 }

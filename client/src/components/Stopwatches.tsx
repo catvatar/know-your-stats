@@ -15,7 +15,7 @@ async function fetchStopwatches() : Promise<Stopwatch[]> {
     }).then(response => {
         return response.json();
     }).catch(err => {
-        console.error(err);
+        return err;
     });
 }
 
@@ -28,10 +28,8 @@ async function createStopwatch(name: string) {
         },
         body: JSON.stringify({ name })
     })
-    .then(response => {
-    })
     .catch(err => {
-        console.error(err);
+        return err;
     });
 }
 
@@ -44,10 +42,8 @@ async function renameStopwatch(id: number, name: string) {
         },
         body: JSON.stringify({ name })
     })
-    .then(response => {
-    })
     .catch(err => {
-        console.error(err);
+        return err;
     });
 }
 
@@ -58,10 +54,8 @@ async function deleteStopwatch(id: number) {
             "user-agent": "vscode-restclient"
         }
     })
-    .then(response => {
-    })
     .catch(err => {
-        console.error(err);
+        return err;
     });
 }
 
@@ -77,11 +71,15 @@ export default function Stopwatches(): React.JSX.Element {
     
     const [stopwatchToBeDeleted, setstopwatchToBeDeleted] = useState<number | null>(null);
     const [isAreYouSurePopupOpen, setIsAreYouSurePopupOpen] = useState(false);
+
+    const [error, setError] = useState<string | null>(null);
  
     const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        fetchStopwatches().then(stopwatches => setStopwatches(stopwatches));
+        fetchStopwatches().then((stopwatches) => {
+            stopwatches ? setStopwatches(stopwatches) : setError("Failed to fetch stopwatches");
+        });
     }, []);
 
     useEffect(() => {
@@ -140,7 +138,7 @@ export default function Stopwatches(): React.JSX.Element {
                             <Stopwatch id={stopwatch.id}/>
                         </li> 
                     )):
-                <h3>Create your first stopwatch by clicking the "Add Stopwatch" button</h3>}
+                error ? <h3>{error}</h3> : <h3>Create your first stopwatch by clicking the "Add Stopwatch" button</h3>}
                 </ul>
             </div>
             {isAddStopwatchPopupOpen && (

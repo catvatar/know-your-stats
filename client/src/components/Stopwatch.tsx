@@ -12,7 +12,7 @@ const fetchStopwatchEntries = async (id: number, limit: number | null = null) =>
     }).then(response => {
         return response.json();
     }).catch(err => {
-        console.error(err);
+        return err;
     });
 }
 
@@ -25,10 +25,8 @@ const startStopwatch = async (id: number) => {
         },
         body: JSON.stringify({ start_time: Date.now() })
     })
-    .then(response => {
-    })
     .catch(err => {
-        console.error(err);
+        return err;
     });
 }
 
@@ -41,10 +39,8 @@ const stopStopwatch = async (id: number) => {
         },
         body: JSON.stringify({ stop_time: Date.now() })
     })
-    .then(response => {
-    })
     .catch(err => {
-        console.error(err);
+        return err;
     });
 }
 
@@ -87,11 +83,17 @@ export default function Stopwatch({id}: {id: number}) {
     const [fakeTime, setFakeTime] = useState(0);
     const [fakeIntervalId, setFakeIntervalId] = useState<NodeJS.Timeout>();
 
+    const [error, setError] = useState<string | null>(null);
+
     useEffect(() => {
         fetchStopwatchEntries(id, 1).then((entries: StopwatchEntry[]) => {
             if(entries.length > 0) {
                 stopwatchDispatchAction(entries[0]);
             }
+        })
+        .catch(err => {
+            console.error("My Error:",err);
+            setError(err);
         });
     }, []);
 
@@ -142,5 +144,6 @@ export default function Stopwatch({id}: {id: number}) {
         <div className="flex items-end justify-end w-full mt-4">
             <a href={`/stopwatch/${id}`} className="text-3xl text-white hover:text-gray-400">{'Entries >'}</a>
         </div>
+        {error && <div className="text-red-500 mt-4">{error.toString()}</div>}
     </div>;
 }
