@@ -41,8 +41,8 @@ async function create_tables() {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     stopwatch_id INTEGER NOT NULL,
     start_time TEXT NOT NULL,
-    stop_time TEXT
-    note TEXT,
+    stop_time TEXT,
+    note TEXT
   )`);
 }
 create_tables();
