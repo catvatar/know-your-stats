@@ -34,13 +34,15 @@ const db = new sqlite3.Database('./db/stopwatches.db', (err) => {
 async function create_tables() {
   await db.run(`CREATE TABLE IF NOT EXISTS stopwatches (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    description TEXT
   )`);
   await db.run(`CREATE TABLE IF NOT EXISTS stopwatches_entries (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     stopwatch_id INTEGER NOT NULL,
     start_time TEXT NOT NULL,
     stop_time TEXT
+    note TEXT,
   )`);
 }
 create_tables();
