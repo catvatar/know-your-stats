@@ -3,72 +3,10 @@ import Stopwatch from "./Stopwatch";
 import HowToUse from "./HowToUse";
 import PopupWrapper from "../utils/components/PopupWrapper";
 
-type Stopwatch = {
-    id: number;
-    name: string;
-    description: string;
-}
-
-type StopwatchPrototype = {
-    name: string;
-    description: string;
-}
-
-async function fetchStopwatches() : Promise<Stopwatch[]> {
-    return await fetch("http://localhost:3001/api/stopwatches", {
-        "method": "GET",
-        "headers": {
-            "user-agent": "vscode-restclient"
-        }
-    }).then(response => {
-        return response.json();
-    }).catch(err => {
-        return err;
-    });
-}
-
-async function createStopwatch(stopwatch: StopwatchPrototype) {
-    fetch("http://localhost:3001/api/stopwatches", {
-        "method": "POST",
-        "headers": {
-            "user-agent": "vscode-restclient",
-            "content-type": "application/json"
-        },
-        body: JSON.stringify(stopwatch)
-    })
-    .catch(err => {
-        return err;
-    });
-}
-
-async function renameStopwatch(id: number, name: string) {
-    fetch(`http://localhost:3001/api/stopwatches/${id}`, {
-        "method": "PUT",
-        "headers": {
-            "user-agent": "vscode-restclient",
-            "content-type": "application/json"
-        },
-        body: JSON.stringify({ name })
-    })
-    .catch(err => {
-        return err;
-    });
-}
-
-async function deleteStopwatch(id: number) {
-    fetch(`http://localhost:3001/api/stopwatches/${id}`, {
-        "method": "DELETE",
-        "headers": {
-            "user-agent": "vscode-restclient"
-        }
-    })
-    .catch(err => {
-        return err;
-    });
-}
+import { StopwatchResponse, StopwatchPrototype, fetchStopwatches, createStopwatch, renameStopwatch, deleteStopwatch } from "../utils/apis/stopwatches_api";
 
 export default function Stopwatches(): React.JSX.Element {
-    const [stopwatches, setStopwatches] = React.useState<Stopwatch[]>([]);
+    const [stopwatches, setStopwatches] = React.useState<StopwatchResponse[]>([]);
 
     const [isAddStopwatchPopupOpen, setIsAddStopwatchPopupOpen] = useState(false);
     const [newStopwatchProtorype, setNewStopwatchProtorype] = useState<StopwatchPrototype | null>(null);
