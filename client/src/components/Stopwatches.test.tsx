@@ -169,7 +169,7 @@ describe('Stopwatches Component', () => {
         
         await act(async () => {
             fireEvent.change(screen.getByPlaceholderText('New Stopwatch Name'), { target: { value: 'Stopwatch 3' } });
-            fireEvent.click(screen.getByTestId('rename'));
+            fireEvent.click(screen.getByText('Submit'));
         });
         
         expect(screen.getByText('Stopwatch 2')).toBeInTheDocument();

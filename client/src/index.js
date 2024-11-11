@@ -1,22 +1,26 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import EntriesBrowser from './EntriesBrowser';
 import GraphView from './GraphView';
 
+import KnowYourStatsWrapper from './components/KnowYourStatsWrapper';
+import Stopwatches from './components/Stopwatches';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Router>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/stopwatch/:id" element={<EntriesBrowser />} />
-        <Route path="/stopwatch/:id/graph" element={<GraphView/>} />
-      </Routes>
-    </Router>
+    <KnowYourStatsWrapper>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Stopwatches />} />
+          <Route path="/stopwatch/:id" element={<EntriesBrowser />} />
+          <Route path="/stopwatch/:id/graph" element={<GraphView/>} />
+        </Routes>
+      </Router>
+    </KnowYourStatsWrapper>
   </React.StrictMode>
 );
 
