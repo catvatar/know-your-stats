@@ -82,9 +82,9 @@ export default function GraphView() {
                     })} size={[600,1200]}/>
                 </div>
                 <p>{`Total duration: ${formatTime(Math.floor(entries.reduce((acc, entry) => acc + (entry.stop_time?entry.stop_time - entry.start_time:0), 0)/1000))}`}</p>
-                <p>{`Avrage duration: ${formatTime(Math.floor(entries.reduce((acc, entry) => acc + (entry.stop_time?entry.stop_time - entry.start_time:0), 0)/entries.length)/1000)}`}</p>
+                <p>{`Avrage duration: ${formatTime(Math.floor(entries.reduce((acc, entry) => acc + (entry.stop_time?entry.stop_time - entry.start_time:0), 0)/entries.length/1000))}`}</p>
                 <p>{`Longest duration: ${formatTime(Math.floor(entries.reduce((acc, entry) => Math.max(acc, entry.stop_time?entry.stop_time - entry.start_time:0), 0)/1000))}`}</p>
-                <p>{`Shortest duration: ${formatTime(Math.floor(entries.reduce((acc, entry) => Math.min(acc, entry.stop_time?entry.stop_time - entry.start_time:0), 0)/1000))}`}</p>
+                <p>{`Shortest duration: ${formatTime(Math.floor(entries.reduce((acc, entry) => Math.min(acc, entry.stop_time?entry.stop_time - entry.start_time:0), Infinity)/1000))}`}</p>
                 <p>{`Number of entries: ${entries.length}`}</p>
             </div>
         </div>);
