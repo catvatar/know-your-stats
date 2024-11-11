@@ -1,4 +1,6 @@
-export async function fetchStopwatchEntries(id: number, limit: number | null = null) {
+import { StopwatchEntry } from "./types_api";
+
+export async function fetchStopwatchEntries(id: number, limit: number | null = null) : Promise<StopwatchEntry[]> {
     const apiURL: string = limit ? `http://localhost:3001/api/stopwatches/${id}/entries/${limit}` : `http://localhost:3001/api/stopwatches/${id}/entries`;
     return await fetch(apiURL, {
         "method": "GET",
@@ -7,13 +9,11 @@ export async function fetchStopwatchEntries(id: number, limit: number | null = n
         }
     }).then(response => {
         return response.json();
-    }).catch(err => {
-        return err.json();
     });
 }
 
-export async function startStopwatch(id: number) {
-    fetch(`http://localhost:3001/api/stopwatches/${id}/entries`, {
+export async function startStopwatch(id: number): Promise<StopwatchEntry> {
+    return fetch(`http://localhost:3001/api/stopwatches/${id}/entries`, {
         "method": "POST",
         "headers": {
             "user-agent": "vscode-restclient",
@@ -22,25 +22,42 @@ export async function startStopwatch(id: number) {
         body: JSON.stringify({ start_time: Date.now() })
     }).then(response => {
         return response.json();
-    })
-    .catch(err => {
-        return err.json();
     });
 }
 
-export async function stopStopwatch(id: number) {
-    fetch(`http://localhost:3001/api/stopwatches/${id}/entries`, {
+export async function stopStopwatch(id: number): Promise<StopwatchEntry> {
+    return fetch(`http://localhost:3001/api/stopwatches/${id}/entries`, {
         "method": "PUT",
         "headers": {
             "user-agent": "vscode-restclient",
             "content-type": "application/json"
         },
         body: JSON.stringify({ stop_time: Date.now() })
-    })
-    .then(response => {
+    }).then(response => {
         return response.json();
+    });
+}
+
+export async function deleteStopwatchEntry(id: number): Promise<void> {
+    return fetch(`http://localhost:3001/api/stopwatches/entries/${id}`, {
+        "method": "DELETE",
+        "headers": {
+            "user-agent": "vscode-restclient"
+        }
+    }).then(() => {
+        return;
     })
-    .catch(err => {
-        return err.json();
+}
+
+export async function updateStopwatchEntryWithNote(id: number, note: string): Promise<StopwatchEntry> {
+    return fetch(`http://localhost:3001/api/stopwatches/entries/${id}/note`, {
+        "method": "PUT",
+        "headers": {
+            "user-agent": "vscode-restclient",
+            "content-type": "application/json"
+        },
+        "body": JSON.stringify({ note })
+    }).then(response => {
+        return response.json();
     });
 }

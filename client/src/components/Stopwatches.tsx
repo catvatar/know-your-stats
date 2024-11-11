@@ -25,11 +25,18 @@ export default function Stopwatches(): React.JSX.Element {
     const addStopwatchInputRef = useRef<HTMLInputElement>(null);
     const renameStopwatchInputRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
+    const handleFetchStopwatches = () => {
         fetchStopwatches()
+        .catch(err => {
+            setError(err);
+        })
         .then((stopwatches) => {
-            stopwatches ? setStopwatches(stopwatches) : setError("Failed to fetch stopwatches");
+            stopwatches && setStopwatches(stopwatches);
         });
+    }
+
+    useEffect(() => {
+        handleFetchStopwatches();
     }, []);
 
     useEffect(() => {
@@ -46,24 +53,33 @@ export default function Stopwatches(): React.JSX.Element {
 
     const handleAddStopwatch = () => {
         newStopwatchProtorype && createStopwatch(newStopwatchProtorype).then(() => {
-            fetchStopwatches().then(stopwatches => setStopwatches(stopwatches));
+            handleFetchStopwatches();
             setIsAddStopwatchPopupOpen(false);
             setNewStopwatchProtorype(null);
+        })
+        .catch(err => {
+            setError(err);
         });
     };
 
     const handleRenameStopwatch = (id: number, name: string) => {
         renameStopwatch(id, name).then(() => {
-            fetchStopwatches().then(stopwatches => setStopwatches(stopwatches));
+            handleFetchStopwatches();
             setIsRenameStopwatchPopupOpen(false);
             setRenameStopwatchName("");
+        })
+        .catch(err => {
+            setError(err);
         });
     }
 
     const handleDeleteStopwatch = (id: number) => {
         deleteStopwatch(id).then(() => {
-            fetchStopwatches().then(stopwatches => setStopwatches(stopwatches));
+            handleFetchStopwatches();
             setIsAreYouSurePopupOpen(false);
+        })
+        .catch(err => {
+            setError(err);
         });
     };
  

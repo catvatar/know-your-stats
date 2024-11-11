@@ -3,68 +3,9 @@ import { useParams } from "react-router-dom";
 import { formatTime } from "./utils/functions/time-formats";
 import PopupWrapper from "./utils/components/PopupWrapper";
 
-const fetchStopwatch = async (id: number) => {
-    return await fetch(`http://localhost:3001/api/stopwatches/${id}`, {
-        "method": "GET",
-        "headers": {
-            "user-agent": "vscode-restclient"
-        }
-    }).then(response => {
-        return response.json();
-    }).catch(err => {
-        console.error(err);
-    });
-}
-
-const fetchStopwatchEntries = async (id: number, limit: number | null = null) => {
-    const apiURL: string = limit ? `http://localhost:3001/api/stopwatches/${id}/entries/${limit}` : `http://localhost:3001/api/stopwatches/${id}/entries`;
-    return await fetch(apiURL, {
-        "method": "GET",
-        "headers": {
-            "user-agent": "vscode-restclient"
-        }
-    }).then(response => {
-        return response.json();
-    }).catch(err => {
-        console.error(err);
-    });
-}
-
-const deleteStopwatchEntry = async (id: number) => {
-    fetch(`http://localhost:3001/api/stopwatches/entries/${id}`, {
-        "method": "DELETE",
-        "headers": {
-            "user-agent": "vscode-restclient"
-        }
-    })
-    .then(response => {
-        console.log(response);
-    })
-    .catch(err => {
-        console.error(err);
-    });
-}
-
-const updateStopwatchEntryWithNote = async (id: number, note: string) => {
-    fetch(`http://localhost:3001/api/stopwatches/entries/${id}/note`, {
-        "method": "PUT",
-        "headers": {
-            "user-agent": "vscode-restclient",
-            "content-type": "application/json"
-        },
-        "body": JSON.stringify({ note })
-    })
-    .catch(err => {
-        console.error(err);
-    });
-}
-
-type StopwatchEntry = {
-    id: number;
-    start_time: number;
-    stop_time: number | null;
-    note: string;
-}
+import { fetchStopwatch } from "./utils/apis/stopwatches_api";
+import { fetchStopwatchEntries, deleteStopwatchEntry, updateStopwatchEntryWithNote } from "./utils/apis/stopwatch_entries_api";
+import { StopwatchEntry } from "./utils/apis/types_api";
 
 export default function EntriesBrowser() {
     const { id } = useParams();
