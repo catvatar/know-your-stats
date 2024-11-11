@@ -17,7 +17,7 @@ export default function Button(props: {
             color = "blue";
             break;
     }
-    const buttonClass = `p-2 text-white rounded bg-${color}-500 hover:bg-${color}-700`
+    const buttonClass = `text-white p-2 rounded bg-${color}-500 hover:bg-${color}-700`
     return (
         <button
             onClick={props.onClick}
