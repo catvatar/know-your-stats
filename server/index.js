@@ -49,7 +49,7 @@ create_tables();
 
 // Get all stopwatches
 app.get("/api/stopwatches", (req, res) => {
-  const sql = `SELECT * FROM stopwatches`;
+  const sql = `SELECT id, name, description FROM stopwatches`;
   db.all(sql, [], (err, rows) => {
     if (err) {
       console.error(`Error getting stopwatches:`, err);
@@ -61,11 +61,11 @@ app.get("/api/stopwatches", (req, res) => {
 
 // Get a stopwatch of provided id
 app.get("/api/stopwatches/:id", (req, res) => {
-  const sql = `SELECT * FROM stopwatches WHERE id = ?`;
+  const sql = `SELECT id, name, description FROM stopwatches WHERE id = ?`;
   db.get(sql, [req.params.id], (err, row) => {
     if (err) {
-      console.error(`Error getting stopwatch ${req.params.id}:`);
-      res.errored(`Error getting stopwatch ${req.params.id}:`);
+      console.error(`Error getting stopwatches:`, err);
+      return res.status(500).json({ error: "Error getting a stopwatch" });
     }
     res.json(row);
   });
@@ -76,16 +76,18 @@ app.post("/api/stopwatches", (req, res) => {
   console.log(req.body.name, req.body.description);
   const sql = `INSERT INTO stopwatches(name, description) VALUES(?, ?)`;
   const values = [req.body.name, req.body.description];
-  let error = null;
   db.run(sql, values, function (err) {
     if (err) {
-      console.error(`Error adding stopwatch ${req.body.name}:`);
-      error = err.message;
-      throw err.message;
+      console.error(`Error getting stopwatches:`, err);
+      return res.status(500).json({ error: "Error getting stopwatches" });
     }
     console.log(`A row has been inserted with rowid ${this.lastID}`);
+    res.json({
+      id: this.lastID,
+      name: this.name,
+      description: this.description
+    });
   });
-  res.json({ message: `${error ? error : 'Stopwatch added successfully!'}`, id: this.lastID });
 });
 
 // Rename a stopwatch of provided id
@@ -95,33 +97,38 @@ app.put("/api/stopwatches/:id", (req, res) => {
   const values = [data.name, req.params.id];
   db.run(sql, values, function (err) {
     if (err) {
-      console.error(`Error updating stopwatch ${req.params.id}:`);
-      throw err.message;
+      console.error(`Error updating stopwatch ${req.params.id}:`, err);
+      return res.status(500).json({error: "Error renaming stopwatch"})
     }
     console.log(`Row(s) updated: ${this.changes}`);
+    res.json({
+      id: this.lastID,
+      name: this.name,
+      description: this.description
+    });
   });
-  res.json({ message: "Stopwatch updated successfully!" });
 });
 
 // Delete a stopwatch of provided id and all its entries
 app.delete("/api/stopwatches/:id", (req, res) => {
-  const sql = `DELETE FROM stopwatches WHERE id = ?`;
-  db.run(sql, [req.params.id], function (err) {
-    if (err) {
-      console.error(`Error deleting stopwatch ${req.params.id}:`);
-      throw err.message;
-    }
-    console.log(`Row(s) deleted: ${this.changes}`);
-  });
   const sql2 = `DELETE FROM stopwatches_entries WHERE stopwatch_id = ?`;
   db.run(sql2, [req.params.id], function (err) {
     if (err) {
-      console.error(`Error deleting entries for stopwatch ${req.params.id}:`);
-      throw err.message;
+      console.error(`Error deleting entries for stopwatch ${req.params.id}:`, err);
+      return res.status(500).json({error: `Error deleting entries for stopwatch ${req.params.id}`})
     }
     console.log(`Row(s) deleted: ${this.changes}`);
+
+    const sql = `DELETE FROM stopwatches WHERE id = ?`;
+    db.run(sql, [req.params.id], function (err) {
+      if (err) {
+        console.error(`Error deleting stopwatch ${req.params.id}:`, err);
+        return res.status(500).json({error: `Error deleting stopwatch ${req.params.id}`})
+      }
+      console.log(`Row(s) deleted: ${this.changes}`);
+      res.json({ error: null });
+    });
   });
-  res.json({ message: "Stopwatch deleted successfully!" });
 });
 
 // Edit description for a stopwatch of provided id

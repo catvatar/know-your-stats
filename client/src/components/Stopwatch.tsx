@@ -2,11 +2,9 @@ import React, { useEffect, useReducer, useState } from 'react';
 
 import { formatTime } from '../utils/functions/time-formats';
 
-import { fetchStopwatchEntries, 
-    startStopwatch, 
-    stopStopwatch, 
-    StopwatchEntry 
-} from '../utils/apis/stopwatch_entries_api';
+import { fetchStopwatchEntries, startStopwatch, stopStopwatch } from '../utils/apis/stopwatch_entries_api';
+
+import { StopwatchEntry } from '../utils/apis/types_api'
 
 interface StopwatchState {
     stopwatchEntry: StopwatchEntry | null;

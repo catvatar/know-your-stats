@@ -44,19 +44,3 @@ export async function stopStopwatch(id: number) {
         return err.json();
     });
 }
-
-export type StopwatchEntry = {
-    id: number;
-    start_time: number;
-    stop_time: number | null;
-    note: string;
-}
-
-export type FetchResponse = {
-    entries: StopwatchEntry[];
-    error: Error;
-}
-
-export type Error = {
-    error: string | null;
-}

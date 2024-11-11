@@ -3,7 +3,9 @@ import Stopwatch from "./Stopwatch";
 import HowToUse from "./HowToUse";
 import PopupWrapper from "../utils/components/PopupWrapper";
 
-import { StopwatchResponse, StopwatchPrototype, fetchStopwatches, createStopwatch, renameStopwatch, deleteStopwatch } from "../utils/apis/stopwatches_api";
+import { fetchStopwatches, createStopwatch, renameStopwatch, deleteStopwatch } from "../utils/apis/stopwatches_api";
+
+import { StopwatchPrototype, Stopwatch as StopwatchResponse } from "../utils/apis/types_api";
 
 export default function Stopwatches(): React.JSX.Element {
     const [stopwatches, setStopwatches] = React.useState<StopwatchResponse[]>([]);
@@ -24,7 +26,8 @@ export default function Stopwatches(): React.JSX.Element {
     const renameStopwatchInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        fetchStopwatches().then((stopwatches) => {
+        fetchStopwatches()
+        .then((stopwatches) => {
             stopwatches ? setStopwatches(stopwatches) : setError("Failed to fetch stopwatches");
         });
     }, []);
