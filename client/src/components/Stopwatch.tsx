@@ -1,54 +1,12 @@
 import React, { useEffect, useReducer, useState } from 'react'; 
 
-import { formatTime } from '../utils/time-formats';
+import { formatTime } from '../utils/functions/time-formats';
 
-const fetchStopwatchEntries = async (id: number, limit: number | null = null) => {
-    const apiURL: string = limit ? `http://localhost:3001/api/stopwatches/${id}/entries/${limit}` : `http://localhost:3001/api/stopwatches/${id}/entries`;
-    return await fetch(apiURL, {
-        "method": "GET",
-        "headers": {
-            "user-agent": "vscode-restclient"
-        }
-    }).then(response => {
-        return response.json();
-    }).catch(err => {
-        return err;
-    });
-}
-
-const startStopwatch = async (id: number) => {
-    fetch(`http://localhost:3001/api/stopwatches/${id}/entries`, {
-        "method": "POST",
-        "headers": {
-            "user-agent": "vscode-restclient",
-            "content-type": "application/json"
-        },
-        body: JSON.stringify({ start_time: Date.now() })
-    })
-    .catch(err => {
-        return err;
-    });
-}
-
-const stopStopwatch = async (id: number) => {
-    fetch(`http://localhost:3001/api/stopwatches/${id}/entries`, {
-        "method": "PUT",
-        "headers": {
-            "user-agent": "vscode-restclient",
-            "content-type": "application/json"
-        },
-        body: JSON.stringify({ stop_time: Date.now() })
-    })
-    .catch(err => {
-        return err;
-    });
-}
-
-type StopwatchEntry = {
-    id: number;
-    start_time: number;
-    stop_time: number | null;
-}
+import { fetchStopwatchEntries, 
+    startStopwatch, 
+    stopStopwatch, 
+    StopwatchEntry 
+} from '../utils/apis/stopwatch_entries_api';
 
 interface StopwatchState {
     stopwatchEntry: StopwatchEntry | null;
@@ -111,7 +69,8 @@ export default function Stopwatch({id}: {id: number}) {
         const newEntry: StopwatchEntry = {
             id: id,
             start_time: Date.now(),
-            stop_time: null
+            stop_time: null,
+            note: ""
         };
         stopwatchDispatchAction(newEntry);
         startStopwatch(id).then(() => {

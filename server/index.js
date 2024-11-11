@@ -52,8 +52,8 @@ app.get("/api/stopwatches", (req, res) => {
   const sql = `SELECT * FROM stopwatches`;
   db.all(sql, [], (err, rows) => {
     if (err) {
-      console.error(`Error getting stopwatches:`);
-      throw err;
+      console.error(`Error getting stopwatches:`, err);
+      return res.status(500).json({ error: "Error getting stopwatches" });
     }
     res.json(rows);
   });
@@ -65,7 +65,7 @@ app.get("/api/stopwatches/:id", (req, res) => {
   db.get(sql, [req.params.id], (err, row) => {
     if (err) {
       console.error(`Error getting stopwatch ${req.params.id}:`);
-      throw err;
+      res.errored(`Error getting stopwatch ${req.params.id}:`);
     }
     res.json(row);
   });
@@ -85,7 +85,7 @@ app.post("/api/stopwatches", (req, res) => {
     }
     console.log(`A row has been inserted with rowid ${this.lastID}`);
   });
-  res.json({ message: `${error?error:'Stopwatch added successfully!'}`, id: this.lastID });
+  res.json({ message: `${error ? error : 'Stopwatch added successfully!'}`, id: this.lastID });
 });
 
 // Rename a stopwatch of provided id

@@ -3,7 +3,7 @@ import { render, screen, act, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Stopwatch from './Stopwatch';
 
-jest.mock('../utils/time-formats', () => ({
+jest.mock('../utils/functions/time-formats', () => ({
     formatTime: ((time: number): string => `${time} seconds`)
 }));
 

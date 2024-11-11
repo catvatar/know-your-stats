@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { formatTime } from "./utils/time-formats";
+import { formatTime } from "./utils/functions/time-formats";
+import PopupWrapper from "./utils/components/PopupWrapper";
 
 const fetchStopwatch = async (id: number) => {
     return await fetch(`http://localhost:3001/api/stopwatches/${id}`, {
@@ -165,8 +166,7 @@ export default function EntriesBrowser() {
                     )})}
                 </ul>
             </div>
-            {isNotePopupOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                <PopupWrapper isOpen={isNotePopupOpen}>
                     <div className="bg-gray-800 p-4 rounded shadow-md">
                         <h3 className="text-xl font-semibold mb-4">Note for entry {entryToEdit}</h3>
                         <input
@@ -189,8 +189,7 @@ export default function EntriesBrowser() {
                                 }} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">Save</button>
                         </div>
                     </div>
-                </div>
-            )}
+                </PopupWrapper>
             {error && <p className="text-red-500 text-center mt-4">{error.toString()}</p>}
         </div>);
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import {XYPlot, LineSeries, VerticalGridLines, HorizontalGridLines, XAxis, YAxis, LineSeriesPoint} from 'react-vis';
-import { formatTime } from '../utils/time-formats';
+import { formatTime } from '../utils/functions/time-formats';
 
 
 export function LineChart({ data, size}: { data: LineSeriesPoint[], size: [number, number]}): React.JSX.Element {

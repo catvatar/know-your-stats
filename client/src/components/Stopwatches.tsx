@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Stopwatch from "./Stopwatch";
 import HowToUse from "./HowToUse";
+import PopupWrapper from "../utils/components/PopupWrapper";
 
 type Stopwatch = {
     id: number;
@@ -158,68 +159,62 @@ export default function Stopwatches(): React.JSX.Element {
                 error ? <h3>{error}</h3> : <HowToUse/>}
                 </ul>
             </div>
-            {isAddStopwatchPopupOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-gray-800 p-4 rounded shadow-md">
-                        <h3 className="text-xl font-semibold mb-4">Add New Stopwatch</h3>
-                        <input
-                            ref={addStopwatchInputRef}
-                            type="text"
-                            value={newStopwatchProtorype?.name}
-                            onChange={(e) => setNewStopwatchProtorype({name: e.target.value} as StopwatchPrototype)}
-                            className="w-full p-2 mb-4 bg-gray-700 text-white rounded"
-                            placeholder="Stopwatch Name"
-                        />
-                        <input
-                            type="text"
-                            value={newStopwatchProtorype?.description || ""}
-                            onChange={(e) => setNewStopwatchProtorype({...newStopwatchProtorype, description: e.target.value} as StopwatchPrototype)}
-                            className="w-full p-2 mb-4 bg-gray-700 text-white rounded"
-                            placeholder="Stopwatch Description"
-                        />
-                        <div className="flex justify-end space-x-2">
-                            <button onClick={() => setIsAddStopwatchPopupOpen(false)} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">Cancel</button>
-                            <button onClick={handleAddStopwatch} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">Add</button>
-                        </div>
+            <PopupWrapper isOpen={isAddStopwatchPopupOpen}>
+                <div className="bg-gray-800 p-4 rounded shadow-md">
+                    <h3 className="text-xl font-semibold mb-4">Add New Stopwatch</h3>
+                    <input
+                        ref={addStopwatchInputRef}
+                        type="text"
+                        value={newStopwatchProtorype?.name}
+                        onChange={(e) => setNewStopwatchProtorype({name: e.target.value} as StopwatchPrototype)}
+                        className="w-full p-2 mb-4 bg-gray-700 text-white rounded"
+                        placeholder="Stopwatch Name"
+                    />
+                    <input
+                        type="text"
+                        value={newStopwatchProtorype?.description || ""}
+                        onChange={(e) => setNewStopwatchProtorype({...newStopwatchProtorype, description: e.target.value} as StopwatchPrototype)}
+                        className="w-full p-2 mb-4 bg-gray-700 text-white rounded"
+                        placeholder="Stopwatch Description"
+                    />
+                    <div className="flex justify-end space-x-2">
+                        <button onClick={() => setIsAddStopwatchPopupOpen(false)} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">Cancel</button>
+                        <button onClick={handleAddStopwatch} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">Add</button>
                     </div>
                 </div>
-            )}
-            {isRenameStopwatchPopupOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-gray-800 p-4 rounded shadow-md">
-                        <h3 className="text-xl font-semibold mb-4">Rename Stopwatch</h3>
-                        <input
-                            ref={renameStopwatchInputRef}
-                            type="text"
-                            value={renameStopwatchName}
-                            onChange={(e) => setRenameStopwatchName(e.target.value)}
-                            className="w-full p-2 mb-4 bg-gray-700 text-white rounded"
-                            placeholder="New Stopwatch Name"
-                        />
-                        <div className="flex justify-end space-x-2">
-                            <button onClick={() => setIsRenameStopwatchPopupOpen(false)} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">Cancel</button>
-                            <button onClick={()=>{
-                                stopwatchToBeRenamed&&handleRenameStopwatch(stopwatchToBeRenamed, renameStopwatchName);
-                                }} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700" data-testid='rename'>Rename</button>
-                        </div>
+            </PopupWrapper>
+            <PopupWrapper isOpen={isRenameStopwatchPopupOpen}>
+                <div className="bg-gray-800 p-4 rounded shadow-md">
+                    <h3 className="text-xl font-semibold mb-4">Rename Stopwatch</h3>
+                    <input
+                        ref={renameStopwatchInputRef}
+                        type="text"
+                        value={renameStopwatchName}
+                        onChange={(e) => setRenameStopwatchName(e.target.value)}
+                        className="w-full p-2 mb-4 bg-gray-700 text-white rounded"
+                        placeholder="New Stopwatch Name"
+                    />
+                    <div className="flex justify-end space-x-2">
+                        <button onClick={() => setIsRenameStopwatchPopupOpen(false)} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">Cancel</button>
+                        <button onClick={()=>{
+                            stopwatchToBeRenamed&&handleRenameStopwatch(stopwatchToBeRenamed, renameStopwatchName);
+                            }} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700" data-testid='rename'>Rename</button>
                     </div>
                 </div>
-            )}
-            {isAreYouSurePopupOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-gray-800 p-4 rounded shadow-md">
-                        <h3 className="text-xl font-semibold mb-4">Are you sure you want to delete this stopwatch?</h3>
-                        <p>This will delete the stopwatch and ALL it's entries.</p>
-                        <p className="font-semibold mb-4">This action is irreversible</p>
-                        <div className="flex justify-end space-x-2">
-                            <button onClick={() => setIsAreYouSurePopupOpen(false)} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">No</button>
-                            <button onClick={() => {
-                                stopwatchToBeDeleted&&handleDeleteStopwatch(stopwatchToBeDeleted);
-                                }} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">I'm sure</button>
-                        </div>
+            </PopupWrapper>
+            <PopupWrapper isOpen={isAreYouSurePopupOpen}>
+                <div className="bg-gray-800 p-4 rounded shadow-md">
+                    <h3 className="text-xl font-semibold mb-4">Are you sure you want to delete this stopwatch?</h3>
+                    <p>This will delete the stopwatch and ALL it's entries.</p>
+                    <p className="font-semibold mb-4">This action is irreversible</p>
+                    <div className="flex justify-end space-x-2">
+                        <button onClick={() => setIsAreYouSurePopupOpen(false)} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">No</button>
+                        <button onClick={() => {
+                            stopwatchToBeDeleted&&handleDeleteStopwatch(stopwatchToBeDeleted);
+                            }} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">I'm sure</button>
                     </div>
                 </div>
-            )}
+            </PopupWrapper>
         </div>
     );
 }
