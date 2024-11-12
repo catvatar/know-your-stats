@@ -9,6 +9,7 @@ import {
 } from "../utils/apis/stopwatch_entries_api";
 
 import { StopwatchEntry } from "../utils/apis/types_api";
+import Button from "../utils/components/Button";
 
 interface StopwatchState {
   stopwatchEntry: StopwatchEntry | null;
@@ -104,34 +105,26 @@ export default function Stopwatch({ id }: { id: number }) {
   return (
     <div className="flex flex-col items-center rounded bg-gray-800 p-4 text-white shadow-md">
       {stopwatchState.elapsedTime + fakeTime > 0 ? (
-        <p className="mb-4 text-center text-2xl">
+        <p className="text-center text-2xl">
           {formatTime(
             Math.floor((stopwatchState.elapsedTime + fakeTime) / 1000),
           )}
         </p>
       ) : (
-        <p className="mb-4 text-center text-2xl">
+        <p className="text-center text-2xl">
           Run the stopwatch by pressing the Start button
         </p>
       )}
-      <div className="space-x-2">
-        {!stopwatchState.isRunning ? (
-          <button
-            onClick={handleStart}
-            className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-700"
-          >
-            Start
-          </button>
-        ) : (
-          <button
-            onClick={handleStop}
-            className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-700"
-          >
-            Stop
-          </button>
-        )}
-      </div>
-      <div className="mt-4 flex w-full items-end justify-end">
+      {!stopwatchState.isRunning ? (
+        <Button onClick={handleStart} type="submit">
+          Start
+        </Button>
+      ) : (
+        <Button onClick={handleStop} type="reset">
+          Stop
+        </Button>
+      )}
+      <div className="flex w-full items-end justify-end">
         <a
           href={`/stopwatch/${id}`}
           className="text-3xl text-white hover:text-gray-400"
@@ -139,7 +132,7 @@ export default function Stopwatch({ id }: { id: number }) {
           {"Entries >"}
         </a>
       </div>
-      {error && <div className="mt-4 text-red-500">{error.toString()}</div>}
+      {error && <div className="pt-4 text-red-500">{error.toString()}</div>}
     </div>
   );
 }

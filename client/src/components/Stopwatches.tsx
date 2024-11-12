@@ -154,6 +154,7 @@ export default function Stopwatches(): React.JSX.Element {
           value={newStopwatchProtorype?.name || ""}
           onChange={(e) =>
             setNewStopwatchProtorype({
+              ...newStopwatchProtorype,
               name: e.target.value,
             } as StopwatchPrototype)
           }
