@@ -8,6 +8,7 @@ import GraphView from "./components/GraphView";
 
 import KnowYourStatsWrapper from "./components/KnowYourStatsWrapper";
 import Stopwatches from "./components/Stopwatches";
+import LoginPage from "./components/LoginPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -16,6 +17,7 @@ root.render(
       <Router>
         <Routes>
           <Route path="/" element={<Stopwatches />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/stopwatch/:id" element={<EntriesBrowser />} />
           <Route path="/stopwatch/:id/graph" element={<GraphView />} />
         </Routes>
