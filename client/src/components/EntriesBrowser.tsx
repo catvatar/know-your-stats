@@ -89,7 +89,7 @@ export default function EntriesBrowser() {
   return (
     <>
       <h2 className="mb-4 text-center text-xl font-bold">
-        <a href={`/stopwatch/${id}/graph`}>Graph Data</a>
+        <a href={`/stopwatch/${id}/graph`}>Graph "{stopwatchName}" Data</a>
       </h2>
       <ul className="flex w-full flex-col items-center justify-center">
         {entries.map((entry, index, entries) => {
