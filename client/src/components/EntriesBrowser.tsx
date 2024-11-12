@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { formatTime } from "./utils/functions/time-formats";
-import PopupWrapper from "./utils/components/PopupWrapper";
+import { formatTime } from "../utils/functions/time-formats";
+import PopupWrapper from "../utils/components/PopupWrapper";
 
-import { fetchStopwatch } from "./utils/apis/stopwatches_api";
+import { fetchStopwatch } from "../utils/apis/stopwatches_api";
 import {
   fetchStopwatchEntries,
   deleteStopwatchEntry,
   updateStopwatchEntryWithNote,
-} from "./utils/apis/stopwatch_entries_api";
-import { StopwatchEntry } from "./utils/apis/types_api";
+} from "../utils/apis/stopwatch_entries_api";
+import { StopwatchEntry } from "../utils/apis/types_api";
 
 export default function EntriesBrowser() {
   const { id } = useParams();

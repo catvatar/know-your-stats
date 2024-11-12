@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { LineChart } from "./components/LineChart";
-import { formatTime } from "./utils/functions/time-formats";
+import { LineChart } from "./LineChart";
+import { formatTime } from "../utils/functions/time-formats";
 
 const fetchStopwatch = async (id: number) => {
   return await fetch(`http://localhost:3001/api/stopwatches/${id}`, {

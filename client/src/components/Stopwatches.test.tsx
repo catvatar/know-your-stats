@@ -10,7 +10,7 @@ jest.mock("./Stopwatch", () => ({ id }: { id: number }) => (
 jest.mock("./HowToUse", () => ({}) => <div>No Stopwatches Rendered</div>);
 
 describe("Stopwatches Component", () => {
-  let mockStopwatches: { id: number; name: string }[] = [];
+  let mockStopwatches: { id: number; name: string; description: string }[] = [];
   beforeEach(() => {
     global.fetch = jest.fn((url, options) => {
       if (
@@ -28,6 +28,7 @@ describe("Stopwatches Component", () => {
         mockStopwatches.push({
           id: 3,
           name: JSON.parse(options.body as string).name,
+          description: JSON.parse(options.body as string).description,
         });
         return Promise.resolve({
           json: () =>
@@ -70,8 +71,8 @@ describe("Stopwatches Component", () => {
       return Promise.reject(new Error("Unknown API call"));
     }) as jest.Mock;
     mockStopwatches = [
-      { id: 1, name: "Stopwatch 1" },
-      { id: 2, name: "Stopwatch 2" },
+      { id: 1, name: "Stopwatch 1", description: "Description 1" },
+      { id: 2, name: "Stopwatch 2", description: "Description 2" },
     ];
   });
 
@@ -243,5 +244,33 @@ describe("Stopwatches Component", () => {
     });
 
     expect(screen.getByText("Stopwatches")).toBeInTheDocument();
+  });
+
+  test("handles fetch errors gracefully", async () => {
+    global.fetch = jest.fn(() =>
+      Promise.reject(new Error("Failed to fetch stopwatches")),
+    );
+
+    await act(() => {
+      render(<Stopwatches />);
+    });
+
+    expect(
+      screen.getByText("Error: Failed to fetch stopwatches"),
+    ).toBeInTheDocument();
+  });
+
+  test("renders stopwatch description", async () => {
+    mockStopwatches = [
+      { id: 1, name: "Stopwatch 1", description: "Description 1" },
+      { id: 2, name: "Stopwatch 2", description: "Description 2" },
+    ];
+
+    await act(() => {
+      render(<Stopwatches />);
+    });
+
+    expect(screen.getByText("Description 1")).toBeInTheDocument();
+    expect(screen.getByText("Description 2")).toBeInTheDocument();
   });
 });

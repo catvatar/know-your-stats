@@ -62,7 +62,6 @@ export default function Stopwatch({ id }: { id: number }) {
         }
       })
       .catch((err) => {
-        console.error("My Error:", err);
         setError(err);
       });
   }, []);

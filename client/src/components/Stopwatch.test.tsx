@@ -142,4 +142,30 @@ describe("Stopwatch Component", () => {
       screen.getByText("Run the stopwatch by pressing the Start button"),
     ).toBeInTheDocument();
   });
+
+  test("handles fetch error gracefully", async () => {
+    global.fetch = jest.fn().mockRejectedValue(new Error("Fetch error"));
+    await act(async () => {
+      render(<Stopwatch id={1} />);
+    });
+
+    expect(screen.getByText("Error: Fetch error")).toBeInTheDocument();
+  });
+
+  test("renders running stopwatch on initial load", async () => {
+    mockStopwatchEntries = [
+      {
+        id: 1,
+        start_time: Date.now() - 5000,
+        stop_time: null,
+      },
+    ];
+
+    await act(async () => {
+      render(<Stopwatch id={1} />);
+    });
+
+    expect(screen.getByText("5 seconds")).toBeInTheDocument();
+    expect(screen.getByText("Stop")).toBeInTheDocument();
+  });
 });
