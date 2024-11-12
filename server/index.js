@@ -30,3 +30,6 @@ app.use("/api/stopwatches", stopwatches);
 
 const stopwatches_entries = require("./routes/stopwatches_entries");
 app.use("/api/stopwatches", stopwatches_entries);
+
+const auth = require("./routes/auth");
+app.use("/api/auth", auth);

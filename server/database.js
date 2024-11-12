@@ -24,6 +24,11 @@ async function create_tables(db) {
     stop_time TEXT,
     note TEXT NOT NULL DEFAULT ('')
   )`);
+  db.run(`CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL,
+    password TEXT NOT NULL
+  )`);
 }
 
 module.exports = { connectToDatabase, create_tables };

@@ -55,3 +55,13 @@ content-type: application/json
 ### Delete stopwatch entry of provided id
 # http://localhost:3001/api/stopwatches/entries/:entry_id
 DELETE http://localhost:3001/api/stopwatches/entries/4
+
+### Login
+# http://localhost:3001/api/auth/login
+POST http://localhost:3001/api/auth/login
+content-type: application/json
+
+{
+    "email": "email",
+    "password": "password"
+}
