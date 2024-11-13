@@ -70,7 +70,7 @@ router.post(
     failureRedirect: "/api/auth/failure",
   }),
   (req, res) => {
-    req.session.user = req.user; // Store user in session
+    req.session.user = { id: req.user.id, username: req.user.username }; // Ensure user ID is set in session
     res.json({ message: "Login successful", user: req.user });
   },
 );

@@ -14,6 +14,7 @@ export async function login(username: string, password: string) {
     .then((data) => {
       if (data.message === "Login successful") {
         localStorage.setItem("user", JSON.stringify(data.user)); // Store user in local storage
+        document.cookie = `stopwatch_session=${JSON.stringify(data.user)}; path=/`; // Set session cookie
       }
       return data;
     })
@@ -32,6 +33,8 @@ export async function logout() {
   })
     .then((response) => response.json())
     .then((data) => {
+      document.cookie =
+        "stopwatch_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"; // Delete session cookie
       localStorage.removeItem("user");
       return data;
     })

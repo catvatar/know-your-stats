@@ -5,7 +5,8 @@ import Button from "../utils/components/Button";
 import { login } from "../utils/apis/auth_api";
 
 export default function LoginPage() {
-  const [error, setError] = useState<string>("");
+  const error = new URLSearchParams(window.location.search).get("error");
+
   const [response, setResponse] = useState<boolean>(false);
 
   const [username, setUsername] = useState("");
@@ -14,6 +15,7 @@ export default function LoginPage() {
   return (
     <>
       <H1>Sign in</H1>
+      {error && <p className={`pt-2 text-red-500`}>{error}</p>}
       <section className="flex flex-col py-4">
         <Input
           placeholder="Username"
@@ -30,19 +32,22 @@ export default function LoginPage() {
           onClick={async () => {
             const res = await login(username, password);
             if (res.error) {
-              setError(res.error);
+              window.location.href = `/login?error=${res.error}`;
+              setResponse(false);
+              return;
             }
-            res.message == "Login successful"
-              ? (window.location.href = "/")
-              : setResponse(true);
+            if (res.message === "Login successful") {
+              localStorage.setItem("user", JSON.stringify(res.user)); // Store user in local storage
+              window.location.href = "/";
+            } else {
+              window.location.href = "/login?error=Login failed";
+            }
           }}
           type="submit"
         >
           Sign in
         </Button>
       </section>
-      {error && <p className={`text-red-500`}>{error}</p>}
-      {response && <p className={`text-red-500`}>Login failed</p>}
     </>
   );
 }

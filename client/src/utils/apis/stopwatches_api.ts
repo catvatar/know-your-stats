@@ -5,7 +5,9 @@ export async function fetchStopwatches(): Promise<Stopwatch[]> {
     method: "GET",
     headers: {
       "user-agent": "vscode-restclient",
+      "content-type": "application/json",
     },
+    credentials: "include", // Include credentials to send session cookie
   }).then((response) => {
     return response.json();
   });
@@ -16,7 +18,9 @@ export async function fetchStopwatch(id: number): Promise<Stopwatch> {
     method: "GET",
     headers: {
       "user-agent": "vscode-restclient",
+      "content-type": "application/json",
     },
+    credentials: "include", // Include credentials to send session cookie
   }).then((response) => {
     return response.json();
   });
@@ -31,6 +35,7 @@ export async function createStopwatch(
       "user-agent": "vscode-restclient",
       "content-type": "application/json",
     },
+    credentials: "include", // Include credentials to send session cookie
     body: JSON.stringify(stopwatch),
   }).then((response) => {
     return response.json();

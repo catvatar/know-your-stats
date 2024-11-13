@@ -11,20 +11,6 @@ const db = new sqlite3.Database("./db/stopwatches.db", (err) => {
 });
 
 db.serialize(() => {
-  db.run(`CREATE TABLE IF NOT EXISTS stopwatches (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    description TEXT NOT NULL DEFAULT ('')
-  )`);
-
-  db.run(`CREATE TABLE IF NOT EXISTS stopwatches_entries (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    stopwatch_id INTEGER NOT NULL,
-    start_time TEXT NOT NULL,
-    stop_time TEXT,
-    note TEXT NOT NULL DEFAULT ('')
-  )`);
-
   db.run(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY,
     username TEXT UNIQUE,
@@ -33,17 +19,40 @@ db.serialize(() => {
     name TEXT,
     email TEXT UNIQUE,
     email_verified INTEGER
-    )`);
+  )`);
 
-  const salt = crypto.randomBytes(16);
+  db.run(`CREATE TABLE IF NOT EXISTS stopwatches (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT (''),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+  )`);
+
+  db.run(`CREATE TABLE IF NOT EXISTS stopwatches_entries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    stopwatch_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    start_time TEXT NOT NULL,
+    stop_time TEXT,
+    note TEXT NOT NULL DEFAULT (''),
+    FOREIGN KEY (stopwatch_id) REFERENCES stopwatches(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+  )`);
+
+  const salt1 = crypto.randomBytes(16);
   db.run(
-    "INSERT OR IGNORE INTO users (username, email, hashed_password, salt) VALUES (?, ?, ?, ?)",
+    "INSERT OR IGNORE INTO users (username, hashed_password, salt) VALUES (?, ?, ?)",
     [
       "franek",
-      "email",
-      crypto.pbkdf2Sync("letmein", salt, 310000, 32, "sha256"),
-      salt,
+      crypto.pbkdf2Sync("good2137job", salt1, 310000, 32, "sha256"),
+      salt1,
     ],
+  );
+  const salt2 = crypto.randomBytes(16);
+  db.run(
+    "INSERT OR IGNORE INTO users (username, hashed_password, salt) VALUES (?, ?, ?)",
+    ["zosia", crypto.pbkdf2Sync("go2rus", salt2, 310000, 32, "sha256"), salt2],
   );
 });
 

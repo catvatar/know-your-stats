@@ -54,7 +54,9 @@ export default function Stopwatches(): React.JSX.Element {
   };
 
   useEffect(() => {
-    handleFetchStopwatches();
+    if (document.cookie.includes("session")) {
+      handleFetchStopwatches();
+    }
   }, []);
 
   const handleAddStopwatch = () => {
@@ -99,7 +101,18 @@ export default function Stopwatches(): React.JSX.Element {
         <H2>
           <a href="/">Stopwatches</a>
         </H2>
-        <Button onClick={() => setIsAddStopwatchPopupOpen(true)} type="submit">
+        <Button
+          onClick={() => {
+            if (!localStorage.getItem("user")) {
+              window.location.href = encodeURI(
+                "/login?error=You need to be logged in to add a stopwatch",
+              );
+              return;
+            }
+            setIsAddStopwatchPopupOpen(true);
+          }}
+          type="submit"
+        >
           Add Stopwatch
         </Button>
       </HorizontalFlexWrapper>

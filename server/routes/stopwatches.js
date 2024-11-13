@@ -4,10 +4,35 @@ const router = express.Router();
 
 const db = require("../database");
 
-// Get all stopwatches
+router.use((req, res, next) => {
+  if (!req.session) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  db.get(`SELECT * FROM users WHERE id = ?`, [req.session.id], (err, row) => {
+    if (err) {
+      console.error(`Error getting user:`, err);
+      return res.status(500).json({ error: "Error getting user" });
+    }
+    if (!row) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const inMemoryBuffer = Buffer.from(req.session.hashed_password, "utf-8");
+    const dbBuffer = Buffer.from(row.hashed_password);
+
+    console.log(inMemoryBuffer);
+    console.log(dbBuffer);
+    if (Buffer.compare(inMemoryBuffer, dbBuffer) !== 0) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    next();
+  });
+});
+
+// Get all stopwatches for the logged-in user
 router.get("/", (req, res) => {
-  const sql = `SELECT id, name, description FROM stopwatches`;
-  db.all(sql, [], (err, rows) => {
+  const sql = `SELECT id, name, description FROM stopwatches WHERE user_id = ?`;
+  db.all(sql, [req.session.id], (err, rows) => {
     if (err) {
       console.error(`Error getting stopwatches:`, err);
       return res.status(500).json({ error: "Error getting stopwatches" });
@@ -16,10 +41,10 @@ router.get("/", (req, res) => {
   });
 });
 
-// Get a stopwatch of provided id
+// Get a stopwatch of provided id for the logged-in user
 router.get("/:id", (req, res) => {
-  const sql = `SELECT id, name, description FROM stopwatches WHERE id = ?`;
-  db.get(sql, [req.params.id], (err, row) => {
+  const sql = `SELECT id, name, description FROM stopwatches WHERE id = ? AND user_id = ?`;
+  db.get(sql, [req.params.id, req.session.user.id], (err, row) => {
     if (err) {
       console.error(`Error getting stopwatches:`, err);
       return res.status(500).json({ error: "Error getting a stopwatch" });
@@ -28,21 +53,23 @@ router.get("/:id", (req, res) => {
   });
 });
 
-// Add a new stopwatch
+// Add a new stopwatch for the logged-in user
 router.post("/", (req, res) => {
-  console.log(req.body.name, req.body.description);
-  const sql = `INSERT INTO stopwatches(name, description) VALUES(?, ?)`;
-  const values = [req.body.name, req.body.description || ""];
+  const sql = `INSERT INTO stopwatches(user_id, name, description) VALUES(?, ?, ?)`;
+  const values = [
+    req.session.user.id,
+    req.body.name,
+    req.body.description || "",
+  ];
   db.run(sql, values, function (err) {
     if (err) {
-      console.error(`Error getting stopwatches:`, err);
-      return res.status(500).json({ error: "Error getting stopwatches" });
+      console.error(`Error adding stopwatch:`, err);
+      return res.status(500).json({ error: "Error adding stopwatch" });
     }
-    console.log(`A row has been inserted with rowid ${this.lastID}`);
     res.json({
       id: this.lastID,
-      name: this.name,
-      description: this.description,
+      name: req.body.name,
+      description: req.body.description,
     });
   });
 });

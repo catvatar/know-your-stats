@@ -6,11 +6,21 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-var cookieParser = require("cookie-parser");
+const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
+app.use((req, res, next) => {
+  try {
+    const cookie = JSON.parse(req.cookies.stopwatch_session);
+    req.session = cookie;
+  } catch (error) {
+    req.session = null;
+  }
+  next();
+});
+
 const cors = require("cors");
-app.use(cors());
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
 app.get("/api", (req, res) => {
   res.json({ message: "Hello from server!" });
