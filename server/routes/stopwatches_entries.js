@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { connectToDatabase } = require("../database");
-const db = connectToDatabase();
+const db = require("../database");
 
 // Get 50 entries for a stopwatch of provided id
 router.get("/ :id/entries", (req, res) => {

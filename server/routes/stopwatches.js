@@ -2,8 +2,7 @@ const express = require("express");
 
 const router = express.Router();
 
-const { connectToDatabase } = require("../database");
-const db = connectToDatabase();
+const db = require("../database");
 
 // Get all stopwatches
 router.get("/", (req, res) => {
