@@ -55,15 +55,19 @@ passport.deserializeUser(function (user, cb) {
   });
 });
 
-router.get("/login", function (req, res, next) {
-  res.render("login");
+router.get("/success", function (req, res) {
+  res.json({ message: "Login successful" });
+});
+
+router.get("/failure", function (req, res) {
+  res.status(401).json({ message: "Login failed" });
 });
 
 router.post(
   "/login",
   passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/login",
+    successRedirect: "/api/auth/success",
+    failureRedirect: "/api/auth/failure",
   }),
 );
 

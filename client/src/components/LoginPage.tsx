@@ -12,9 +12,13 @@ export default function LoginPage() {
     fetch("http://localhost:3001/api/auth/login", {
       method: "POST",
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        "user-agent": "vscode-restclient",
+        "content-type": "application/json",
       },
-      body: new URLSearchParams({ email: username, password }),
+      body: JSON.stringify({
+        username: username,
+        password: password,
+      }),
     })
       .then((response) => response.json())
       .then((data) => {
