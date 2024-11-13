@@ -3,6 +3,7 @@ var passport = require("passport");
 var LocalStrategy = require("passport-local");
 var crypto = require("crypto");
 var db = require("../database");
+const { redirect } = require("react-router-dom");
 var router = express.Router();
 
 passport.use(
@@ -55,9 +56,9 @@ passport.deserializeUser(function (user, cb) {
   });
 });
 
-router.get("/success", function (req, res) {
-  res.json({ message: "Login successful" });
-});
+// router.get("/success", function (req, res) {
+//   res.json({ message: "Login successful", user: req.session.user });
+// });
 
 router.get("/failure", function (req, res) {
   res.status(401).json({ message: "Login failed" });
@@ -66,9 +67,12 @@ router.get("/failure", function (req, res) {
 router.post(
   "/login",
   passport.authenticate("local", {
-    successRedirect: "/api/auth/success",
     failureRedirect: "/api/auth/failure",
   }),
+  (req, res) => {
+    req.session.user = req.user; // Store user in session
+    res.json({ message: "Login successful", user: req.user });
+  },
 );
 
 router.post("/logout", function (req, res, next) {
@@ -76,7 +80,10 @@ router.post("/logout", function (req, res, next) {
     if (err) {
       return next(err);
     }
-    res.redirect("/");
+    req.session.destroy(() => {
+      res.clearCookie("connect.sid");
+      res.json({ message: "Logout successful" });
+    });
   });
 });
 

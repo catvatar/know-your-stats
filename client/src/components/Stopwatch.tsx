@@ -103,7 +103,8 @@ export default function Stopwatch({ id }: { id: number }) {
 
   return (
     <div className="flex flex-col items-center rounded bg-gray-800 p-4 text-white shadow-md">
-      {stopwatchState.elapsedTime + fakeTime > 0 ? (
+      {stopwatchState.elapsedTime + fakeTime > 0 ||
+      stopwatchState.stopwatchEntry ? (
         <p className="text-center text-2xl">
           {formatTime(
             Math.floor((stopwatchState.elapsedTime + fakeTime) / 1000),

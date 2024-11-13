@@ -1,33 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import H1 from "../utils/components/H1";
 import Input from "../utils/components/Input";
 import Button from "../utils/components/Button";
+import { login } from "../utils/apis/auth_api";
 
 export default function LoginPage() {
-  const [username, setUsername] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [error, setError] = useState<string>("");
+  const [response, setResponse] = useState<boolean>(false);
 
-  const handleLogin = async () => {
-    console.log("payload", { email: username, password });
-    fetch("http://localhost:3001/api/auth/login", {
-      method: "POST",
-      headers: {
-        "user-agent": "vscode-restclient",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        username: username,
-        password: password,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Success:", data);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   return (
     <>
@@ -44,10 +26,23 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button onClick={handleLogin} type="submit">
+        <Button
+          onClick={async () => {
+            const res = await login(username, password);
+            if (res.error) {
+              setError(res.error);
+            }
+            res.message == "Login successful"
+              ? (window.location.href = "/")
+              : setResponse(true);
+          }}
+          type="submit"
+        >
           Sign in
         </Button>
       </section>
+      {error && <p className={`text-red-500`}>{error}</p>}
+      {response && <p className={`text-red-500`}>Login failed</p>}
     </>
   );
 }
