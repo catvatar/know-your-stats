@@ -52,6 +52,7 @@ export async function renameStopwatch(
       "user-agent": "vscode-restclient",
       "content-type": "application/json",
     },
+    credentials: "include", // Include credentials to send session cookie
     body: JSON.stringify({ name }),
   }).then((response) => {
     return response.json();
@@ -64,6 +65,7 @@ export async function deleteStopwatch(id: number): Promise<void> {
     headers: {
       "user-agent": "vscode-restclient",
     },
+    credentials: "include", // Include credentials to send session cookie
   }).then(() => {
     return;
   });
@@ -79,6 +81,7 @@ export async function editStopwatchDescription(
       "user-agent": "vscode-restclient",
       "content-type": "application/json",
     },
+    credentials: "include", // Include credentials to send session cookie
     body: JSON.stringify({ newDescription }),
   }).then((response) => {
     return response.json();

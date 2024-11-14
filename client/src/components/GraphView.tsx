@@ -3,41 +3,9 @@ import { useParams } from "react-router-dom";
 import { LineChart } from "./LineChart";
 import { formatTime } from "../utils/functions/time-formats";
 
-const fetchStopwatch = async (id: number) => {
-  return await fetch(`http://localhost:3001/api/stopwatches/${id}`, {
-    method: "GET",
-    headers: {
-      "user-agent": "vscode-restclient",
-    },
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-};
+import { fetchStopwatch } from "../utils/apis/stopwatches_api";
 
-const fetchStopwatchEntries = async (
-  id: number,
-  limit: number | null = null,
-) => {
-  const apiURL: string = limit
-    ? `http://localhost:3001/api/stopwatches/${id}/entries/${limit}`
-    : `http://localhost:3001/api/stopwatches/${id}/entries`;
-  return await fetch(apiURL, {
-    method: "GET",
-    headers: {
-      "user-agent": "vscode-restclient",
-    },
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-};
+import { fetchStopwatchEntries } from "../utils/apis/stopwatch_entries_api";
 
 type StopwatchEntry = {
   id: number;

@@ -12,6 +12,7 @@ export async function fetchStopwatchEntries(
     headers: {
       "user-agent": "vscode-restclient",
     },
+    credentials: "include", // Include credentials to send session cookie
   }).then((response) => {
     return response.json();
   });
@@ -24,6 +25,7 @@ export async function startStopwatch(id: number): Promise<StopwatchEntry> {
       "user-agent": "vscode-restclient",
       "content-type": "application/json",
     },
+    credentials: "include", // Include credentials to send session cookie
     body: JSON.stringify({ start_time: Date.now() }),
   }).then((response) => {
     return response.json();
@@ -37,6 +39,7 @@ export async function stopStopwatch(id: number): Promise<StopwatchEntry> {
       "user-agent": "vscode-restclient",
       "content-type": "application/json",
     },
+    credentials: "include", // Include credentials to send session cookie
     body: JSON.stringify({ stop_time: Date.now() }),
   }).then((response) => {
     return response.json();
@@ -49,6 +52,7 @@ export async function deleteStopwatchEntry(id: number): Promise<void> {
     headers: {
       "user-agent": "vscode-restclient",
     },
+    credentials: "include", // Include credentials to send session cookie
   }).then(() => {
     return;
   });
@@ -64,6 +68,7 @@ export async function updateStopwatchEntryWithNote(
       "user-agent": "vscode-restclient",
       "content-type": "application/json",
     },
+    credentials: "include", // Include credentials to send session cookie
     body: JSON.stringify({ note }),
   }).then((response) => {
     return response.json();
