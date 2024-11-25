@@ -3,7 +3,6 @@ var passport = require("passport");
 var LocalStrategy = require("passport-local");
 var crypto = require("crypto");
 var db = require("../database");
-const { redirect } = require("react-router-dom");
 var router = express.Router();
 
 passport.use(
@@ -84,6 +83,40 @@ router.post("/logout", function (req, res, next) {
       res.clearCookie("connect.sid");
       res.json({ message: "Logout successful" });
     });
+  });
+});
+
+let dailyCode;
+
+function generateDailyCode() {
+  dailyCode = crypto.randomBytes(8).toString('hex'); // 16 characters long
+  console.log(`Daily code: ${dailyCode}`);
+}
+
+// Generate and log the code once a day
+setInterval(generateDailyCode, 24 * 60 * 60 * 1000); // 24 hours in milliseconds
+generateDailyCode(); // Initial call to generate the code immediately
+
+router.post("/register", function (req, res, next) {
+  if (req.body.dailyCode !== dailyCode) {
+    return res.status(403).json({ message: "Invalid daily code" });
+  }
+
+  var salt = crypto.randomBytes(16);
+  crypto.pbkdf2(req.body.password, salt, 310000, 32, "sha256", function (err, hashedPassword) {
+    if (err) {
+      return next(err);
+    }
+    db.run(
+      "INSERT INTO users (username, hashed_password, salt) VALUES (?, ?, ?)",
+      [req.body.username, hashedPassword, salt],
+      function (err) {
+        if (err) {
+          return next(err);
+        }
+        res.json({ message: "User created successfully" });
+      }
+    );
   });
 });
 

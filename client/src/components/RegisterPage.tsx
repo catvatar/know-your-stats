@@ -2,21 +2,20 @@ import React, { useState } from "react";
 import H1 from "../utils/components/H1";
 import Input from "../utils/components/Input";
 import Button from "../utils/components/Button";
-import { login } from "../utils/apis/auth_api";
-import { Link } from "react-router-dom";
+import { register } from "../utils/apis/auth_api";
 
-export default function LoginPage() {
-  const error = new URLSearchParams(window.location.search).get("error");
-
-  const [response, setResponse] = useState<boolean>(false);
-
+export default function RegisterPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [dailyCode, setDailyCode] = useState("");
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
   return (
     <>
-      <H1>Sign in</H1>
+      <H1>Register</H1>
       {error && <p className={`pt-2 text-red-500`}>{error}</p>}
+      {message && <p className={`pt-2 text-green-500`}>{message}</p>}
       <section className="flex flex-col py-4">
         <Input
           placeholder="Username"
@@ -29,26 +28,31 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        <Input
+          placeholder="Daily Code"
+          value={dailyCode}
+          onChange={(e) => setDailyCode(e.target.value)}
+        />
         <Button
           onClick={async () => {
-            const res = await login(username, password);
+            const res = await register(username, password, dailyCode);
             if (res.error) {
-              window.location.href = `/login?error=${res.error}`;
-              setResponse(false);
+              setError(res.error);
               return;
             }
-            if (res.message === "Login successful") {
-              localStorage.setItem("user", JSON.stringify(res.user)); // Store user in local storage
-              window.location.href = "/";
+            if (res.message === "User created successfully") {
+              setMessage("Registration successful. Redirecting to login...");
+              setTimeout(() => {
+                window.location.href = "/login";
+              }, 2000); // Redirect after 2 seconds
             } else {
-              window.location.href = "/login?error=Login failed";
+              setError("Registration failed");
             }
           }}
           type="submit"
         >
-          Sign in
+          Register
         </Button>
-        <Link to="/register" className="pt-2 text-blue-500">Don't have an account? Register here</Link>
       </section>
     </>
   );
