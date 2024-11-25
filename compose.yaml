@@ -18,6 +18,13 @@ services:
       - ./db:/usr/src/app/db
     ports:
       - 3001:3001
+  client:
+    build:
+      context: ./client
+    environment:
+      NODE_ENV: production
+    ports:
+      - 3000:3000
 
 volumes:
   db-data:

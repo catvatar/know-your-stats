@@ -40,7 +40,6 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=cache,target=/root/.npm \
     npm ci
 
-# RUN npm install react-vis --force
 
 # Copy the rest of the source files into the image.
 COPY . .
@@ -54,6 +53,8 @@ FROM base as final
 
 # Use production node environment by default.
 ENV NODE_ENV production
+
+RUN npm install -g serve
 
 # Run the application as a non-root user.
 USER node
@@ -69,8 +70,6 @@ COPY --from=build /usr/src/app/build ./build
 
 # Expose the port that the application listens on.
 EXPOSE 3000
-
-RUN npm install serve -g
 
 # Run the application.
 CMD serve -s build

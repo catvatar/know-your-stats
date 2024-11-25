@@ -1,20 +1,17 @@
 import React from "react";
-import {
-  XYPlot,
-  LineSeries,
-  VerticalGridLines,
-  HorizontalGridLines,
-  XAxis,
-  YAxis,
-  LineSeriesPoint,
-} from "react-vis";
+import { LineChart as MULineChart } from '@mui/x-charts/LineChart';
 import { formatTime } from "../utils/functions/time-formats";
+
+
 
 export function LineChart({
   data,
   size,
 }: {
-  data: LineSeriesPoint[];
+  data: {
+    x: number;
+    y: number;
+  }[];
   size: [number, number];
 }): React.JSX.Element {
   const maxEntry =
@@ -34,22 +31,21 @@ export function LineChart({
   }
 
   return (
-    <XYPlot
+    <MULineChart
+      xAxis={[
+        {
+          dataKey: 'x',
+          valueFormatter: (t) => formatDate(t, seriesDuration),
+        },
+      ]}
+      series={[{
+        dataKey: 'y',
+        valueFormatter: (t) => formatTime(t?t:0),
+      }]}
+      dataset={data}
       height={size[0]}
       width={size[1]}
-      yDomain={[0, maxEntry]}
-      className={"bg-gray-900 fill-gray-50 stroke-gray-50 stroke-1"}
-      margin={{ left: 80, right: 10, top: 10, bottom: 50 }}
-    >
-      <VerticalGridLines tickTotal={17} />
-      <HorizontalGridLines tickTotal={8} />
-      <XAxis
-        tickFormat={(t) => formatDate(t, seriesDuration)}
-        tickTotal={9}
-        tickLabelAngle={-30}
-      />
-      <YAxis tickFormat={formatTime} />
-      <LineSeries data={data} className="fill-none stroke-2" color={"red"} />
-    </XYPlot>
+    />
   );
 }
+
