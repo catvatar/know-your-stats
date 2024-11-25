@@ -2,8 +2,6 @@ import React from "react";
 import { LineChart as MULineChart } from '@mui/x-charts/LineChart';
 import { formatTime } from "../utils/functions/time-formats";
 
-
-
 export function LineChart({
   data,
   size,
@@ -31,21 +29,23 @@ export function LineChart({
   }
 
   return (
-    <MULineChart
-      xAxis={[
-        {
-          dataKey: 'x',
-          valueFormatter: (t) => formatDate(t, seriesDuration),
-        },
-      ]}
-      series={[{
-        dataKey: 'y',
-        valueFormatter: (t) => formatTime(t?t:0),
-      }]}
-      dataset={data}
-      height={size[0]}
-      width={size[1]}
-    />
+    <div className="stroke-white">
+      <MULineChart
+        xAxis={[
+          {
+            dataKey: 'x',
+            valueFormatter: (t) => formatDate(t, seriesDuration),
+          },
+        ]}
+        series={[{
+          dataKey: 'y',
+          valueFormatter: (t) => formatTime(t?t:0),
+        }]}
+        dataset={data}
+        height={size[0]}
+        width={size[1]}
+      />
+    </div>
   );
 }
 
